@@ -1,0 +1,22 @@
+.button {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1F3A32;
+  background-color: #10B981;               /* warm gold accent — the "goal reached" color */
+  border: none;
+  border-radius: 10px;                     /* soft, not sharp, not a full pill */
+  padding: 14px 32px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 8px rgba(31, 58, 50, 0.15);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(31, 58, 50, 0.2);
+}
+
+.button:active {
+  transform: translateY(0);
+}
