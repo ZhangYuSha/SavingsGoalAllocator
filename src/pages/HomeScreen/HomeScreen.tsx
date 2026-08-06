@@ -1,5 +1,5 @@
 import './HomeScreen.css'
-import Button from '../component/Button.tsx'
+import Button from '../../component/Button.tsx'
 
 function HomeScreen() {
 
