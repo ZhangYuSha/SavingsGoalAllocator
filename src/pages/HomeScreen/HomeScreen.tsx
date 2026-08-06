@@ -1,7 +1,13 @@
 import './HomeScreen.css'
 import Button from '../../component/Button.tsx'
+import { useNavigate } from 'react-router-dom';
 
 function HomeScreen() {
+  const navigate = useNavigate();
+
+  const handleNavigation = (): void => {
+    navigate('/DataInput'); 
+  };
 
   return (
     <>
@@ -13,7 +19,7 @@ function HomeScreen() {
           <p>
             Plan your savings for the better future
           </p>
-          <Button text="Create Goal" />
+          <Button text="Create Goal" onClick={handleNavigation} />
         </div>
       </section>
     </>
