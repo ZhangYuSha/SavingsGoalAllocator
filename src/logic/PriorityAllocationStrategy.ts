@@ -544,6 +544,20 @@ export class PriorityAllocationStrategy
 
       /*
        * -------------------------------------------
+       * COUNT ELIGIBLE MONTHS
+       * -------------------------------------------
+       */
+
+      const eligibleMonths =
+        countRemainingEligibleMonths(
+          goal,
+          firstEligibleYear,
+          firstEligibleMonth
+        )
+
+
+      /*
+       * -------------------------------------------
        * OPTION 1 — FUND IMMEDIATELY
        *
        * This option is shown ONLY when the
@@ -636,42 +650,42 @@ export class PriorityAllocationStrategy
 
         allocationPlans.push({
 
-  type: 'immediate',
+          type: 'immediate',
 
-  description:
-    `RM ${goal.targetAmount} in ${formatMonthYear(
-      firstEligibleMonth,
-      firstEligibleYear
-    )}`,
+          description:
+            `RM ${goal.targetAmount} in ${formatMonthYear(
+              firstEligibleMonth,
+              firstEligibleYear
+            )}`,
 
-  amount:
-    goal.targetAmount,
+          amount:
+            goal.targetAmount,
 
-  recommended:
-    true,
+          recommended:
+            true,
 
-  monthlyAllocations: [
+          monthlyAllocations: [
 
-    {
-      month:
-        firstEligibleMonth,
+            {
+              month:
+                firstEligibleMonth,
 
-      year:
-        firstEligibleYear,
+              year:
+                firstEligibleYear,
 
-      monthName:
-        formatMonthYear(
-          firstEligibleMonth,
-          firstEligibleYear
-        ),
+              monthName:
+                formatMonthYear(
+                  firstEligibleMonth,
+                  firstEligibleYear
+                ),
 
-      amount:
-        goal.targetAmount,
-    },
+              amount:
+                goal.targetAmount,
+            },
 
-  ],
+          ],
 
-})
+        })
       }
 
 
@@ -680,110 +694,115 @@ export class PriorityAllocationStrategy
        * OPTION 2 — SPREAD MONTHLY
        * -------------------------------------------
        *
-       * Always available as a planning option.
+       * Only create a separate monthly option
+       * when the goal spans more than one month.
        *
-       * Example:
-       *
-       * RM 1000 / month from August 2026
-       * to September 2026
+       * If the goal starts and ends in the same
+       * month, the monthly option would be
+       * identical to the immediate option.
        * -------------------------------------------
        */
 
-      const spreadMonthlyAllocations:
-  MonthlyAllocation[] = []
+      if (
+        eligibleMonths > 1
+      ) {
 
-let spreadRemaining =
-  goal.targetAmount
+        const spreadMonthlyAllocations:
+          MonthlyAllocation[] = []
 
-let spreadCurrent =
-  new Date(
-    firstEligibleYear,
-    firstEligibleMonth,
-    1
-  )
+        let spreadRemaining =
+          goal.targetAmount
 
-while (
-  spreadCurrent <=
-  new Date(
-    deadlineYear,
-    deadlineMonth,
-    1
-  )
-) {
+        let spreadCurrent =
+          new Date(
+            firstEligibleYear,
+            firstEligibleMonth,
+            1
+          )
 
-  const spreadMonth =
-    spreadCurrent.getMonth()
+        while (
+          spreadCurrent <=
+          new Date(
+            deadlineYear,
+            deadlineMonth,
+            1
+          )
+        ) {
 
-  const spreadYear =
-    spreadCurrent.getFullYear()
+          const spreadMonth =
+            spreadCurrent.getMonth()
 
-  const remainingMonths =
-    countRemainingEligibleMonths(
-      goal,
-      spreadYear,
-      spreadMonth
-    )
+          const spreadYear =
+            spreadCurrent.getFullYear()
 
-  const allocation =
-    Math.min(
-      Math.ceil(
-        spreadRemaining /
-        remainingMonths
-      ),
-      spreadRemaining
-    )
+          const remainingMonths =
+            countRemainingEligibleMonths(
+              goal,
+              spreadYear,
+              spreadMonth
+            )
 
-  spreadMonthlyAllocations.push({
+          const allocation =
+            Math.min(
+              Math.ceil(
+                spreadRemaining /
+                remainingMonths
+              ),
+              spreadRemaining
+            )
 
-    month:
-      spreadMonth,
+          spreadMonthlyAllocations.push({
 
-    year:
-      spreadYear,
+            month:
+              spreadMonth,
 
-    monthName:
-      formatMonthYear(
-        spreadMonth,
-        spreadYear
-      ),
+            year:
+              spreadYear,
 
-    amount:
-      allocation,
+            monthName:
+              formatMonthYear(
+                spreadMonth,
+                spreadYear
+              ),
 
-  })
+            amount:
+              allocation,
 
-  spreadRemaining -=
-    allocation
+          })
 
-  spreadCurrent.setMonth(
-    spreadCurrent.getMonth() + 1
-  )
-}
+          spreadRemaining -=
+            allocation
 
-allocationPlans.push({
+          spreadCurrent.setMonth(
+            spreadCurrent.getMonth() + 1
+          )
+        }
 
-  type: 'monthly',
+        allocationPlans.push({
 
-  description:
-    `RM ${requiredMonthly} / month from ${formatMonthYear(
-      firstEligibleMonth,
-      firstEligibleYear
-    )} to ${formatMonthYear(
-      deadlineMonth,
-      deadlineYear
-    )}`,
+          type: 'monthly',
 
-  amount:
-    requiredMonthly,
+          description:
+            `RM ${requiredMonthly} / month from ${formatMonthYear(
+              firstEligibleMonth,
+              firstEligibleYear
+            )} to ${formatMonthYear(
+              deadlineMonth,
+              deadlineYear
+            )}`,
 
-  recommended:
-    planningCarryForward <
-    goal.targetAmount,
+          amount:
+            requiredMonthly,
 
-  monthlyAllocations:
-    spreadMonthlyAllocations,
+          recommended:
+            planningCarryForward <
+            goal.targetAmount,
 
-})
+          monthlyAllocations:
+            spreadMonthlyAllocations,
+
+        })
+      }
 
 
       /*
