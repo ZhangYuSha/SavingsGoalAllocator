@@ -1,39 +1,53 @@
 .budget-overlay {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.5);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
 }
 
 .budget-box {
-  background:white;
-  width:350px;
-  padding:30px;
-  border-radius:15px;
-  text-align:center;
-  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  background: white;
+
+  width: 350px;
+
+  padding: 30px;
+
+  border-radius: 15px;
+
+  text-align: center;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .budget-icon {
-  font-size:50px;
+  font-size: 50px;
 }
 
 .budget-box h2 {
-  color:#28a745;
+  color: #28a745;
 }
 
 .budget-box h3 {
-  font-size:30px;
+  font-size: 30px;
 }
 
 .budget-box button {
-  background:#1976d2;
-  color:white;
-  border:none;
-  padding:12px 25px;
-  border-radius:8px;
-  cursor:pointer;
+  background: #1976d2;
+
+  color: white;
+
+  border: none;
+
+  padding: 12px 25px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
 }

@@ -1,11 +1,11 @@
-import "./BudgetModal.css";
+import './BudgetModal.css'
 
 interface BudgetModalProps {
-  open:boolean;
-  month:string;
-  year:number;
-  amount:number;
-  onClose:()=>void;
+  open: boolean
+  month: string
+  year: number
+  amount: number
+  onClose: () => void
 }
 
 function BudgetModal({
@@ -13,12 +13,14 @@ function BudgetModal({
   month,
   year,
   amount,
-  onClose
-}:BudgetModalProps){
+  onClose,
+}: BudgetModalProps) {
 
-  if(!open) return null;
+  if (!open) {
+    return null
+  }
 
-  return(
+  return (
     <div className="budget-overlay">
 
       <div className="budget-box">
@@ -32,11 +34,11 @@ function BudgetModal({
         </h2>
 
         <p>
-          Your monthly spare cash for{" "}
+          Your monthly spare cash for{' '}
           <strong>
             {month} {year}
-          </strong>
-          {" "}is:
+          </strong>{' '}
+          is:
         </p>
 
         <h3>
@@ -50,7 +52,7 @@ function BudgetModal({
       </div>
 
     </div>
-  );
+  )
 }
 
-export default BudgetModal;
+export default BudgetModal
