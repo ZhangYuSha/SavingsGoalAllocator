@@ -359,10 +359,10 @@ export class PriorityAllocationStrategy
           )
 
         const amountNeededThisMonth =
-          Math.ceil(
-            remaining /
-            remainingMonths
-          )
+  roundMoney(
+    remaining /
+    remainingMonths
+  )
 
         const allocation =
           Math.min(
@@ -743,13 +743,13 @@ export class PriorityAllocationStrategy
             )
 
           const allocation =
-            Math.min(
-              Math.ceil(
-                spreadRemaining /
-                remainingMonths
-              ),
-              spreadRemaining
-            )
+  Math.min(
+    roundMoney(
+      spreadRemaining /
+      remainingMonths
+    ),
+    spreadRemaining
+  )
 
           spreadMonthlyAllocations.push({
 
@@ -783,16 +783,16 @@ export class PriorityAllocationStrategy
           type: 'monthly',
 
           description:
-            `RM ${requiredMonthly} / month from ${formatMonthYear(
-              firstEligibleMonth,
-              firstEligibleYear
-            )} to ${formatMonthYear(
-              deadlineMonth,
-              deadlineYear
-            )}`,
+  `RM ${spreadMonthlyAllocations[0]?.amount ?? 0} / month from ${formatMonthYear(
+    firstEligibleMonth,
+    firstEligibleYear
+  )} to ${formatMonthYear(
+    deadlineMonth,
+    deadlineYear
+  )}`,
 
-          amount:
-            requiredMonthly,
+amount:
+  spreadMonthlyAllocations[0]?.amount ?? 0,
 
           recommended:
             planningCarryForward <
@@ -883,6 +883,13 @@ export class PriorityAllocationStrategy
  * =================================================
  */
 
+function roundMoney(
+  amount: number
+): number {
+  return Math.round(
+    (amount + Number.EPSILON) * 100
+  ) / 100
+}
 
 /*
  * ---------------------------------------------
