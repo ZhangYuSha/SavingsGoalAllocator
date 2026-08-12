@@ -1,10 +1,9 @@
 export interface Goal {
-  id: number;
-  name: string;
-  targetAmount: number;
-  startDate: string;
-  deadline: string;
-  priority: number;
-  monthlySaving: number;
-  progress: number;
+  id: number
+  priority: number
+  name: string
+  startDate: string
+  deadline: string
+  targetAmount: number
+  progress: number
 }
