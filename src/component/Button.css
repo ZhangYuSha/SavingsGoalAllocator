@@ -1,22 +1,46 @@
 .button {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 600;
   font-size: 1rem;
-  color: #1F3A32;
-  background-color: #10B981;               /* warm gold accent — the "goal reached" color */
+
   border: none;
-  border-radius: 10px;                     /* soft, not sharp, not a full pill */
-  padding: 14px 32px;
+  border-radius: 10px;
+
+  padding: 13px 26px;
+
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 8px rgba(31, 58, 50, 0.15);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
 }
 
-.button:hover {
+.button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(31, 58, 50, 0.2);
 }
 
-.button:active {
-  transform: translateY(0);
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button.primary {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+}
+
+.button.primary:hover:not(:disabled) {
+  box-shadow: 0 7px 16px rgba(16, 185, 129, 0.3);
+}
+
+.button.secondary {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.button.danger {
+  background: #ef4444;
+  color: white;
 }
