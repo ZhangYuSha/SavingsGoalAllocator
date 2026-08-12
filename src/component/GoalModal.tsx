@@ -1,16 +1,16 @@
-import "./GoalModal.css";
+import './GoalModal.css'
 
-interface Goal {
-  name:string;
-  monthlySaving:number;
+interface GoalWarning {
+  name: string
+  shortfall: number
 }
 
 interface GoalModalProps {
-  open:boolean;
-  status:"reachable" | "unreachable";
-  goals:Goal[];
-  onClose:()=>void;
-  onContinue:()=>void;
+  open: boolean
+  status: 'reachable' | 'unreachable'
+  goals: GoalWarning[]
+  onClose: () => void
+  onContinue: () => void
 }
 
 function GoalModal({
@@ -18,105 +18,96 @@ function GoalModal({
   status,
   goals,
   onClose,
-  onContinue
-}:GoalModalProps){
+  onContinue,
+}: GoalModalProps) {
 
-  if(!open) return null;
+  if (!open) {
+    return null
+  }
 
-  return(
+  return (
     <div className="modal-overlay">
 
       <div className="modal-box">
 
-        {
-          status === "reachable" ? (
+        {status === 'reachable' ? (
 
-            <>
-              <div className="success-icon">
-                ✅
-              </div>
+          <>
+            <div className="success-icon">
+              ✅
+            </div>
 
-              <h2>
-                All Goals Are Reachable!
-              </h2>
+            <h2>
+              All Goals Are Reachable!
+            </h2>
 
-              <p>
-                Your current monthly spare cash is enough
-                to achieve all goals before their deadlines.
-              </p>
+            <p>
+              Your monthly savings plan is
+              sufficient to achieve all of
+              your goals before their deadlines.
+            </p>
 
-              <button
-                className="continue-button"
-                onClick={onContinue}
-              >
-                Generate Allocation
-              </button>
-            </>
+            <button
+              className="continue-button"
+              onClick={onContinue}
+            >
+              View Allocation
+            </button>
+          </>
 
-          ) : (
+        ) : (
 
-            <>
-              <div className="warning-icon">
-                ⚠️
-              </div>
+          <>
+            <div className="warning-icon">
+              ⚠️
+            </div>
 
-              <h2>
-                Goals Are Not Reachable
-              </h2>
+            <h2>
+              Some Goals Are Not Reachable
+            </h2>
 
-              <p>
-                Some goals cannot be completed with your
-                current spare cash.
-              </p>
+            <p>
+              Your current monthly savings
+              plan cannot fully fund these goals.
+            </p>
 
-              <div className="unreachable-list">
+            <div className="unreachable-list">
 
-                {
-                  goals.map((goal,index)=>(
+              {goals.map(goal => (
 
-                    <div
-                      className="goal-warning"
-                      key={index}
-                    >
+                <div
+                  className="goal-warning"
+                  key={goal.name}
+                >
+                  <strong>
+                    {goal.name}
+                  </strong>
 
-                      <strong>
-                        {goal.name}
-                      </strong>
+                  <br />
 
-                      <br/>
+                  Shortfall:
+                  {' '}
+                  RM {goal.shortfall}
+                </div>
 
-                      Required:
-                      RM {goal.monthlySaving}/month
+              ))}
 
-                    </div>
+            </div>
 
-                  ))
-                }
+            <button
+              className="close-button"
+              onClick={onClose}
+            >
+              Reconsider Goals
+            </button>
+          </>
 
-              </div>
-
-              <p>
-                Try increasing savings, lowering the target
-                amount, or extending the deadline.
-              </p>
-
-              <button
-                className="close-button"
-                onClick={onClose}
-              >
-                Reconsider Goals
-              </button>
-
-            </>
-
-          )
-
-        }
+        )}
 
       </div>
 
     </div>
-  );
+  )
 }
 
-export default GoalModal;
+export default GoalModal

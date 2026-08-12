@@ -1,27 +1,35 @@
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.5);
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   z-index: 9999;
 }
 
 .modal-box {
   background: white;
+
   width: 420px;
+
   padding: 30px;
+
   border-radius: 15px;
+
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3);
+
   animation: popup 0.25s ease;
 }
 
 @keyframes popup {
+
   from {
     transform: scale(0.8);
     opacity: 0;
@@ -33,10 +41,6 @@
   }
 }
 
-.modal-box h2 {
-  margin-bottom: 15px;
-}
-
 .success-icon,
 .warning-icon {
   font-size: 50px;
@@ -44,20 +48,30 @@
 
 .goal-warning {
   background: #ffe5e5;
+
   padding: 12px;
+
   margin: 10px 0;
+
   border-radius: 8px;
+
   text-align: left;
 }
 
 .continue-button,
 .close-button {
   margin-top: 20px;
+
   padding: 12px 25px;
+
   border: none;
+
   border-radius: 8px;
+
   cursor: pointer;
+
   color: white;
+
   font-size: 16px;
 }
 
