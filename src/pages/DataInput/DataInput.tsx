@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../component/Button";
 import GoalModal from "../../component/GoalModal";
 import BudgetModal from "../../component/BudgetModal";
-
+//Note: data input page for the counting information only
 interface Goal {
   id:number;
   priority:number;
