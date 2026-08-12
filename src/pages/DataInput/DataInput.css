@@ -1,42 +1,245 @@
-.container{
-    width:85%;
-    margin:auto;
-    padding:40px;
+/* =========================
+   PAGE CONTAINER
+   ========================= */
+
+.container {
+  width: 85%;
+
+  max-width: 1200px;
+
+  margin: auto;
+
+  padding: 40px 20px;
 }
 
-.card{
-    background:#fff;
-    padding:20px;
-    margin-bottom:30px;
-    border-radius:10px;
-    box-shadow:0 2px 10px rgba(0,0,0,.1);
 
-    display:flex;
-    flex-direction:column;
-    gap:15px;
+/* =========================
+   PAGE TITLE
+   ========================= */
+
+.container > h1 {
+  color: #1f3a32;
+
+  margin-bottom: 20px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin:30px 0;
+
+/* =========================
+   BACK BUTTON
+   ========================= */
+
+.back-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 30px;
+
+  padding: 10px 16px;
+
+  background: #ffffff;
+
+  color: #1f3a32;
+
+  border: 1px solid #d8e6df;
+
+  border-radius: 999px;
+
+  font-family: 'Inter', sans-serif;
+
+  font-size: 0.9rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
 }
 
-th,td{
-    border:1px solid #ddd;
-    padding:12px;
-    text-align:center;
+.back-button:hover {
+  background: #f8fffb;
+
+  transform: translateX(-2px);
+
+  box-shadow:
+    0 4px 12px
+    rgba(31, 58, 50, 0.1);
 }
 
-th{
-    background:#1976d2;
-    color:white;
+.back-button:active {
+  transform: translateX(0);
 }
 
-progress{
-    width:120px;
+
+/* =========================
+   CARDS
+   ========================= */
+
+.card {
+  background: #ffffff;
+
+  padding: 25px;
+
+  margin-bottom: 30px;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 10px
+    rgba(0, 0, 0, 0.1);
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 15px;
 }
 
-button{
-    cursor:pointer;
+.card h2 {
+  color: #1f3a32;
+}
+
+
+/* =========================
+   DATE SELECTOR
+   ========================= */
+
+.dateSelector {
+  display: flex;
+
+  gap: 10px;
+}
+
+
+/* =========================
+   INPUTS
+   ========================= */
+
+input,
+select {
+  padding: 12px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 8px;
+
+  font-size: 15px;
+
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+
+  border-color: #10b981;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(16, 185, 129, 0.12);
+}
+
+
+/* =========================
+   TABLE
+   ========================= */
+
+table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  margin: 15px 0;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+
+  padding: 12px;
+
+  text-align: center;
+}
+
+th {
+  background: #1976d2;
+
+  color: white;
+}
+
+
+/* =========================
+   PROGRESS
+   ========================= */
+
+progress {
+  width: 120px;
+}
+
+
+/* =========================
+   DELETE BUTTON
+   ========================= */
+
+table button {
+  cursor: pointer;
+
+  border: none;
+
+  background: #dc3545;
+
+  color: white;
+
+  padding: 8px 12px;
+
+  border-radius: 6px;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+table button:hover {
+  background: #bb2d3b;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 800px) {
+
+  .container {
+    width: 95%;
+
+    padding: 20px 10px;
+  }
+
+  .dateSelector {
+    flex-direction: column;
+  }
+
+  table {
+    font-size: 12px;
+
+    display: block;
+
+    overflow-x: auto;
+
+    white-space: nowrap;
+  }
+
+  th,
+  td {
+    padding: 7px;
+  }
+
 }

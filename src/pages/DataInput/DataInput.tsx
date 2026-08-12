@@ -1,309 +1,602 @@
-import "./DataInput.css";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Button from "../../component/Button";
-import GoalModal from "../../component/GoalModal";
-import BudgetModal from "../../component/BudgetModal";
-//Note: data input page for the counting information only
-interface Goal {
-  id:number;
-  priority:number;
-  month:string;
-  year:number;
-  name:string;
-  startDate:string;
-  deadline:string;
-  targetAmount:number;
-  monthlySaving:number;
-  progress:number;
-}
+import './DataInput.css'
 
-function DataInput(){
+import { useState } from 'react'
 
-  const navigate = useNavigate();
+import Button from '../../component/Button'
+import BudgetModal from '../../component/BudgetModal'
+import GoalForm from '../../component/GoalForm'
+import GoalTable from '../../component/GoalTable'
+import GoalModal from '../../component/GoalModal'
 
-  const [month,setMonth]=useState("January");
-  const [year,setYear]=useState(new Date().getFullYear());
-  const [spareCash,setSpareCash]=useState("");
-  const [savedCash,setSavedCash]=useState(0);
+import type { Goal } from '../../types/goal'
+import type { MonthlyBudget } from '../../types/monthlyBudget'
 
-  const [showBudgetModal,setShowBudgetModal]=useState(false);
+import { useNavigate } from 'react-router-dom'
 
-  const [goalName,setGoalName]=useState("");
-  const [targetAmount,setTargetAmount]=useState("");
-  const [startDate,setStartDate]=useState("");
-  const [deadline,setDeadline]=useState("");
-  const [priority,setPriority]=useState(5);
+function DataInput() {
 
-  const [goals,setGoals]=useState<Goal[]>([]);
+  const navigate = useNavigate()
 
-  const [showModal,setShowModal]=useState(false);
-  const [allocationStatus,setAllocationStatus]=useState<"reachable"|"unreachable">("reachable");
-  const [unreachableGoals,setUnreachableGoals]=useState<Goal[]>([]);
+  const currentYear =
+    new Date().getFullYear()
 
+  // -----------------------------
+  // MONTHLY BUDGET
+  // -----------------------------
 
-  const saveMonthlyCash=()=>{
-    if(!spareCash)return;
+  const [
+    budgetMonth,
+    setBudgetMonth
+  ] = useState(
+    new Date().getMonth()
+  )
 
-    setSavedCash(Number(spareCash));
-    setShowBudgetModal(true);
-  };
+  const [
+    budgetYear,
+    setBudgetYear
+  ] = useState(currentYear)
 
+  const [
+    spareCash,
+    setSpareCash
+  ] = useState('')
 
-  const addGoal=()=>{
+  const [
+    monthlyBudgets,
+    setMonthlyBudgets
+  ] = useState<MonthlyBudget[]>([])
 
-    if(!goalName||!targetAmount||!startDate||!deadline)return;
+  const [
+    showBudgetModal,
+    setShowBudgetModal
+  ] = useState(false)
 
-    const start=new Date(startDate);
-    const end=new Date(deadline);
+  // -----------------------------
+  // GOALS
+  // -----------------------------
 
-    const months=(end.getFullYear()-start.getFullYear())*12+
-    (end.getMonth()-start.getMonth())+1;
+  const [
+    goals,
+    setGoals
+  ] = useState<Goal[]>([])
 
-    const monthlySaving=Math.ceil(Number(targetAmount)/months);
+  const [
+    showGoalModal,
+    setShowGoalModal
+  ] = useState(false)
 
-    const newGoal:Goal={
-      id:Date.now(),
-      priority,
-      month,
-      year,
-      name:goalName,
-      startDate,
-      deadline,
-      targetAmount:Number(targetAmount),
-      monthlySaving,
-      progress:0
-    };
+  const [
+    allocationStatus,
+    setAllocationStatus
+  ] = useState<
+    'reachable' | 'unreachable'
+  >('reachable')
 
-    setGoals([...goals,newGoal]);
+  const [
+    unreachableGoals,
+    setUnreachableGoals
+  ] = useState<
+    {
+      name: string
+      shortfall: number
+    }[]
+  >([])
 
-    setGoalName("");
-    setTargetAmount("");
-    setStartDate("");
-    setDeadline("");
-    setPriority(5);
-  };
+  // -----------------------------
+  // SAVE MONTHLY BUDGET
+  // -----------------------------
 
+  const saveMonthlyCash = () => {
 
-  const deleteGoal=(id:number)=>{
-    setGoals(goals.filter(goal=>goal.id!==id));
-  };
-
-
-  const generateAllocation=()=>{
-
-    const impossibleGoals=goals.filter(
-      goal=>goal.monthlySaving>savedCash
-    );
-
-    if(impossibleGoals.length>0){
-      setUnreachableGoals(impossibleGoals);
-      setAllocationStatus("unreachable");
-    }else{
-      setAllocationStatus("reachable");
+    if (!spareCash) {
+      return
     }
 
-    setShowModal(true);
-  };
+    const amount =
+      Number(spareCash)
 
+    if (amount < 0) {
+      return
+    }
 
-  return(
+    const existing =
+      monthlyBudgets.find(
+        budget =>
+          budget.month === budgetMonth &&
+          budget.year === budgetYear
+      )
+
+    if (existing) {
+
+      setMonthlyBudgets(
+        monthlyBudgets.map(
+          budget =>
+            budget.id === existing.id
+              ? {
+                  ...budget,
+                  amount,
+                }
+              : budget
+        )
+      )
+
+    } else {
+
+      const newBudget: MonthlyBudget = {
+
+        id: Date.now(),
+
+        month: budgetMonth,
+
+        year: budgetYear,
+
+        amount,
+
+      }
+
+      setMonthlyBudgets([
+        ...monthlyBudgets,
+        newBudget,
+      ])
+    }
+
+    setSpareCash('')
+
+    setShowBudgetModal(true)
+  }
+
+  // -----------------------------
+  // ADD GOAL
+  // -----------------------------
+
+  const addGoal = (
+    name: string,
+    targetAmount: number,
+    startDate: string,
+    deadline: string,
+    priority: number
+  ) => {
+
+    const newGoal: Goal = {
+
+      id: Date.now(),
+
+      name,
+
+      targetAmount,
+
+      startDate,
+
+      deadline,
+
+      priority,
+
+      progress: 0,
+
+    }
+
+    setGoals([
+      ...goals,
+      newGoal,
+    ])
+  }
+
+  // -----------------------------
+  // DELETE GOAL
+  // -----------------------------
+
+  const deleteGoal = (
+    id: number
+  ) => {
+
+    setGoals(
+      goals.filter(
+        goal => goal.id !== id
+      )
+    )
+  }
+
+  // -----------------------------
+  // CHECK ALLOCATION
+  // -----------------------------
+
+  const checkAllocation = async () => {
+
+    if (goals.length === 0) {
+      return
+    }
+
+    if (monthlyBudgets.length === 0) {
+      return
+    }
+
+    const {
+      generateAllocation,
+    } = await import(
+      '../../logic/allocationEngine'
+    )
+
+    const {
+      PriorityAllocationStrategy,
+    } = await import(
+      '../../logic/PriorityAllocationStrategy'
+    )
+
+    const strategy =
+      new PriorityAllocationStrategy()
+
+    const results =
+      generateAllocation(
+        goals,
+        monthlyBudgets,
+        strategy
+      )
+
+    const unreachable =
+      results
+        .filter(
+          result =>
+            !result.reachable
+        )
+        .map(result => ({
+          name: result.goalName,
+          shortfall: result.shortfall,
+        }))
+
+    if (
+      unreachable.length > 0
+    ) {
+
+      setAllocationStatus(
+        'unreachable'
+      )
+
+      setUnreachableGoals(
+        unreachable
+      )
+
+    } else {
+
+      setAllocationStatus(
+        'reachable'
+      )
+
+      setUnreachableGoals([])
+    }
+
+    setShowGoalModal(true)
+  }
+
+  const monthNames = [
+
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+
+  ]
+
+  return (
+
     <div className="container">
 
-      <h1>Savings Goal Allocator</h1>
+      {/* ========================= */}
+      {/* BACK BUTTON */}
+      {/* ========================= */}
+
+      <button
+        className="back-button"
+        onClick={() =>
+          navigate('/')
+        }
+      >
+        ← Back to Home
+      </button>
+
+      {/* ========================= */}
+      {/* PAGE TITLE */}
+      {/* ========================= */}
+
+      <h1>
+        Savings Goal Allocator
+      </h1>
+
+      {/* ========================= */}
+      {/* MONTHLY BUDGET */}
+      {/* ========================= */}
 
       <div className="card">
 
-        <h2>Monthly Spare Cash</h2>
+        <h2>
+          Monthly Spare Cash
+        </h2>
 
         <div className="dateSelector">
 
-          <select value={month} onChange={e=>setMonth(e.target.value)}>
-            {
-              [
-                "January","February","March","April",
-                "May","June","July","August",
-                "September","October","November","December"
-              ].map(m=><option key={m}>{m}</option>)
+          <select
+            value={budgetMonth}
+            onChange={e =>
+              setBudgetMonth(
+                Number(e.target.value)
+              )
             }
+          >
+
+            {monthNames.map(
+              (month, index) => (
+
+                <option
+                  key={month}
+                  value={index}
+                >
+                  {month}
+                </option>
+
+              )
+            )}
+
           </select>
 
-          <select value={year} onChange={e=>setYear(Number(e.target.value))}>
-            {
-              Array.from({length:10},(_,i)=>{
-                const current=new Date().getFullYear();
-                return <option key={i}>{current+i}</option>
-              })
+          <select
+            value={budgetYear}
+            onChange={e =>
+              setBudgetYear(
+                Number(e.target.value)
+              )
             }
+          >
+
+            {Array.from(
+              {
+                length: 10,
+              },
+              (_, index) => {
+
+                const year =
+                  currentYear + index
+
+                return (
+
+                  <option
+                    key={year}
+                    value={year}
+                  >
+                    {year}
+                  </option>
+
+                )
+
+              }
+            )}
+
           </select>
 
         </div>
 
-
         <input
           type="number"
-          placeholder="Spare cash per month"
+          min="0"
+          placeholder="Spare cash for this month"
           value={spareCash}
-          onChange={e=>setSpareCash(e.target.value)}
+          onChange={e =>
+            setSpareCash(
+              e.target.value
+            )
+          }
         />
-
 
         <Button
           text="Save Monthly Budget"
-          onClick={saveMonthlyCash}
+          onClick={
+            saveMonthlyCash
+          }
         />
-
-        {
-          savedCash>0 &&
-          <p>✅ Saved RM {savedCash} for {month} {year}</p>
-        }
 
       </div>
 
 
+      {/* ========================= */}
+      {/* SAVED BUDGETS */}
+      {/* ========================= */}
 
       <div className="card">
 
-        <h2>Add Savings Goal</h2>
+        <h2>
+          Monthly Budget Plan
+        </h2>
 
-        <input
-          placeholder="Goal Name"
-          value={goalName}
-          onChange={e=>setGoalName(e.target.value)}
-        />
+        {monthlyBudgets.length === 0 ? (
 
-        <input
-          type="number"
-          placeholder="Target Amount"
-          value={targetAmount}
-          onChange={e=>setTargetAmount(e.target.value)}
-        />
+          <p>
+            No monthly budgets added yet.
+          </p>
 
-        <label>Start Date</label>
+        ) : (
 
-        <input
-          type="date"
-          value={startDate}
-          onChange={e=>setStartDate(e.target.value)}
-        />
+          <table>
 
-        <label>Deadline</label>
+            <thead>
 
-        <input
-          type="date"
-          value={deadline}
-          onChange={e=>setDeadline(e.target.value)}
-        />
+              <tr>
+
+                <th>Month</th>
+
+                <th>Year</th>
+
+                <th>Spare Cash</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {[
+                ...monthlyBudgets,
+              ]
+                .sort(
+                  (a, b) =>
+                    a.year - b.year ||
+                    a.month - b.month
+                )
+                .map(budget => (
+
+                  <tr
+                    key={budget.id}
+                  >
+
+                    <td>
+                      {
+                        monthNames[
+                          budget.month
+                        ]
+                      }
+                    </td>
+
+                    <td>
+                      {budget.year}
+                    </td>
+
+                    <td>
+                      RM {budget.amount}
+                    </td>
+
+                  </tr>
+
+                ))}
+
+            </tbody>
+
+          </table>
+
+        )}
+
+      </div>
 
 
-        <label>Priority</label>
+      {/* ========================= */}
+      {/* GOAL FORM */}
+      {/* ========================= */}
 
-        <select
-          value={priority}
-          onChange={e=>setPriority(Number(e.target.value))}
-        >
-          <option value={1}>1 - Lowest</option>
-          <option value={2}>2</option>
-          <option value={3}>3</option>
-          <option value={4}>4</option>
-          <option value={5}>5 - Highest</option>
-        </select>
+      <GoalForm
+        onAddGoal={addGoal}
+      />
 
 
-        <Button
-          text="Add Goal"
-          onClick={addGoal}
+      {/* ========================= */}
+      {/* GOAL TABLE */}
+      {/* ========================= */}
+
+      <div className="card">
+
+        <h2>
+          Savings Goals
+        </h2>
+
+        <GoalTable
+          goals={goals}
+          onDelete={deleteGoal}
         />
 
       </div>
 
 
-
-
-      <table>
-
-        <thead>
-          <tr>
-            <th>Priority</th>
-            <th>Month</th>
-            <th>Year</th>
-            <th>Goal</th>
-            <th>Start</th>
-            <th>Deadline</th>
-            <th>Monthly</th>
-            <th>Total</th>
-            <th>Progress</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-
-        <tbody>
-
-          {
-            goals.map(goal=>(
-
-              <tr key={goal.id}>
-
-                <td>{"⭐".repeat(goal.priority)}</td>
-                <td>{goal.month}</td>
-                <td>{goal.year}</td>
-                <td>{goal.name}</td>
-                <td>{goal.startDate}</td>
-                <td>{goal.deadline}</td>
-                <td>RM {goal.monthlySaving}</td>
-                <td>RM {goal.targetAmount}</td>
-
-                <td>
-                  <progress value={goal.progress} max="100"/>
-                </td>
-
-                <td>
-                  <button onClick={()=>deleteGoal(goal.id)}>
-                    Delete
-                  </button>
-                </td>
-
-              </tr>
-
-            ))
-          }
-
-        </tbody>
-
-      </table>
-
-
+      {/* ========================= */}
+      {/* GENERATE */}
+      {/* ========================= */}
 
       <Button
         text="Generate Allocation"
-        onClick={generateAllocation}
+        onClick={
+          checkAllocation
+        }
+        disabled={
+          goals.length === 0 ||
+          monthlyBudgets.length === 0
+        }
       />
 
 
+      {/* ========================= */}
+      {/* BUDGET MODAL */}
+      {/* ========================= */}
 
       <BudgetModal
         open={showBudgetModal}
-        month={month}
-        year={year}
-        amount={Number(spareCash)}
-        onClose={()=>setShowBudgetModal(false)}
+
+        month={
+          monthNames[
+            budgetMonth
+          ]
+        }
+
+        year={budgetYear}
+
+        amount={
+          monthlyBudgets.find(
+            budget =>
+              budget.month ===
+                budgetMonth &&
+              budget.year ===
+                budgetYear
+          )?.amount ?? 0
+        }
+
+        onClose={() =>
+          setShowBudgetModal(false)
+        }
       />
 
 
+      {/* ========================= */}
+      {/* GOAL MODAL */}
+      {/* ========================= */}
+
       <GoalModal
-        open={showModal}
-        status={allocationStatus}
-        goals={unreachableGoals}
-        onClose={()=>setShowModal(false)}
-        onContinue={()=>{
-          setShowModal(false);
-          navigate("/allocation");
+        open={showGoalModal}
+
+        status={
+          allocationStatus
+        }
+
+        goals={
+          unreachableGoals
+        }
+
+        onClose={() =>
+          setShowGoalModal(false)
+        }
+
+        onContinue={() => {
+
+          setShowGoalModal(false)
+
+          navigate('/allocation', {
+
+            state: {
+
+              goals,
+
+              monthlyBudgets,
+
+            },
+
+          })
+
         }}
+
       />
 
     </div>
-  );
+  )
 }
 
-export default DataInput;
+export default DataInput
