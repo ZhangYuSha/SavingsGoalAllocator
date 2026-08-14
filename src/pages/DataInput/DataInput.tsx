@@ -169,9 +169,7 @@ function DataInput() {
 
       deadline,
 
-      priority,
-
-      progress: 0,
+      priority
 
     }
 

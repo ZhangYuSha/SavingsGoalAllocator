@@ -46,10 +46,6 @@ function GoalTable({
           </th>
 
           <th>
-            Progress
-          </th>
-
-          <th>
             Action
           </th>
 
@@ -96,19 +92,6 @@ function GoalTable({
 
               <td>
                 RM {goal.targetAmount}
-              </td>
-
-              <td>
-
-                <progress
-                  value={goal.progress}
-                  max="100"
-                />
-
-                {' '}
-
-                {goal.progress}%
-
               </td>
 
               <td>

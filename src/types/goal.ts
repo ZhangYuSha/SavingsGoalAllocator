@@ -5,5 +5,4 @@ export interface Goal {
   startDate: string
   deadline: string
   targetAmount: number
-  progress: number
 }
