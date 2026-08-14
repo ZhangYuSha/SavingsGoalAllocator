@@ -785,7 +785,7 @@ describe(
     // =================================================
 
     it(
-      'allocate to a goal before its start date',
+      'carries budget forward when the goal has not started yet',
       () => {
 
         const goals = [
