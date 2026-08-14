@@ -785,7 +785,7 @@ describe(
     // =================================================
 
     it(
-      'does not allocate to a goal before its start date',
+      'allocate to a goal before its start date',
       () => {
 
         const goals = [
