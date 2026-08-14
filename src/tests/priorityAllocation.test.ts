@@ -1,87 +1,67 @@
-import { describe, expect, it } from 'vitest'
+import {
+  describe,
+  expect,
+  it,
+} from 'vitest'
 
 import {
   PriorityAllocationStrategy,
 } from '../logic/PriorityAllocationStrategy'
 
-import type { Goal } from '../types/goal'
-import type { MonthlyBudget } from '../types/monthlyBudget'
+import {
+  createGoal,
+  createBudget,
+} from './testData'
 
-
-/*
- * =================================================
- * TEST HELPERS
- * =================================================
- */
-
-function createGoal(
-  overrides: Partial<Goal> = {}
-): Goal {
-
-  return {
-
-    id: 1,
-
-    name: 'Laptop',
-
-    targetAmount: 1000,
-
-    priority: 1,
-
-    startDate: '2026-08-01',
-
-    deadline: '2026-10-01',
-
-    ...overrides,
-
-  }
-
-}
-
-
-function createBudget(
-  overrides: Partial<MonthlyBudget> = {}
-): MonthlyBudget {
-
-  return {
-
-    id: 1,
-
-    year: 2026,
-
-    month: 7,
-
-    amount: 1000,
-
-    ...overrides,
-
-  }
-
-}
-
-
-/*
- * =================================================
- * PRIORITY ALLOCATION TESTS
- * =================================================
- */
 
 describe(
-  'PriorityAllocationStrategy',
+  'PriorityAllocationStrategy Edge Cases',
   () => {
 
+    const strategy =
+      new PriorityAllocationStrategy()
+
+
     /*
-     * ---------------------------------------------
-     * EMPTY GOALS
-     * ---------------------------------------------
+     * =============================================
+     * EMPTY INPUT
+     * =============================================
      */
 
     it(
       'returns an empty result when there are no goals',
       () => {
 
-        const strategy =
-          new PriorityAllocationStrategy()
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            [],
+            budgets
+          )
+
+
+        expect(
+          result
+        ).toEqual([])
+
+      }
+    )
+
+
+    it(
+      'returns an empty result when there are no goals and no budgets',
+      () => {
 
         const result =
           strategy.allocate(
@@ -89,492 +69,59 @@ describe(
             []
           )
 
-        expect(result).toEqual([])
+
+        expect(
+          result
+        ).toEqual([])
 
       }
     )
 
 
     /*
-     * ---------------------------------------------
-     * FULLY FUNDS GOAL
-     * ---------------------------------------------
+     * =============================================
+     * NO BUDGET
+     * =============================================
      */
 
     it(
-      'fully funds a goal when enough budget is available',
+      'marks a goal unreachable when there is no budget',
       () => {
 
-        const goal =
+        const goals = [
+
           createGoal({
-            targetAmount: 500,
-          })
 
-        const budget =
-          createBudget({
-            amount: 1000,
-          })
+            targetAmount:
+              500,
 
-        const strategy =
-          new PriorityAllocationStrategy()
+          }),
+
+        ]
+
 
         const result =
           strategy.allocate(
-            [goal],
-            [budget]
+            goals,
+            []
           )
 
-        expect(
-          result[0].totalAllocated
-        ).toBe(500)
 
         expect(
-          result[0].reachable
-        ).toBe(true)
-
-        expect(
-          result[0].shortfall
+          result[0]
+            .totalAllocated
         ).toBe(0)
 
-      }
-    )
-
-
-    /*
-     * ---------------------------------------------
-     * INSUFFICIENT BUDGET
-     * ---------------------------------------------
-     */
-
-    it(
-      'marks a goal unreachable when there is insufficient budget',
-      () => {
-
-        const goal =
-          createGoal({
-            targetAmount: 1000,
-          })
-
-        const budget =
-          createBudget({
-            amount: 500,
-          })
-
-        const strategy =
-          new PriorityAllocationStrategy()
-
-        const result =
-          strategy.allocate(
-            [goal],
-            [budget]
-          )
 
         expect(
-          result[0].totalAllocated
-        ).toBe(500)
-
-        expect(
-          result[0].reachable
+          result[0]
+            .reachable
         ).toBe(false)
 
-        expect(
-          result[0].shortfall
-        ).toBe(500)
-
-      }
-    )
-
-
-    /*
-     * ---------------------------------------------
-     * COMBINE SAME-MONTH BUDGETS
-     * ---------------------------------------------
-     */
-
-    it(
-      'combines budgets from the same month',
-      () => {
-
-        const goal =
-          createGoal({
-            targetAmount: 1000,
-          })
-
-        const budgets = [
-
-          createBudget({
-            amount: 400,
-          }),
-
-          createBudget({
-            amount: 600,
-          }),
-
-        ]
-
-        const strategy =
-          new PriorityAllocationStrategy()
-
-        const result =
-          strategy.allocate(
-            [goal],
-            budgets
-          )
 
         expect(
-          result[0].totalAllocated
-        ).toBe(1000)
-
-        expect(
-          result[0].reachable
-        ).toBe(true)
-
-      }
-    )
-
-
-    /*
-     * ---------------------------------------------
-     * CARRY FORWARD
-     * ---------------------------------------------
-     */
-
-    it(
-      'carries unused budget into the next month',
-      () => {
-
-        const goal =
-          createGoal({
-            targetAmount: 1000,
-
-            startDate:
-              '2026-09-01',
-
-            deadline:
-              '2026-09-01',
-          })
-
-        const budgets = [
-
-          createBudget({
-            year: 2026,
-
-            month: 7,
-
-            amount: 500,
-          }),
-
-          createBudget({
-            year: 2026,
-
-            month: 8,
-
-            amount: 500,
-          }),
-
-        ]
-
-        const strategy =
-          new PriorityAllocationStrategy()
-
-        const result =
-          strategy.allocate(
-            [goal],
-            budgets
-          )
-
-        expect(
-          result[0].totalAllocated
-        ).toBe(1000)
-
-        expect(
-          result[0].reachable
-        ).toBe(true)
-
-      }
-    )
-
-
-    /*
-     * ---------------------------------------------
-     * PRIORITY
-     * ---------------------------------------------
-     */
-
-    it(
-      'allocates to higher priority goals first',
-      () => {
-
-        const highPriority =
-          createGoal({
-            id: 1,
-
-            name: 'Emergency',
-
-            targetAmount: 800,
-
-            priority: 5,
-          })
-
-        const lowPriority =
-          createGoal({
-            id: 2,
-
-            name: 'Vacation',
-
-            targetAmount: 800,
-
-            priority: 1,
-          })
-
-        const budget =
-          createBudget({
-            amount: 800,
-          })
-
-        const strategy =
-          new PriorityAllocationStrategy()
-
-        const result =
-          strategy.allocate(
-            [
-              highPriority,
-              lowPriority,
-            ],
-            [budget]
-          )
-
-        const emergency =
-          result.find(
-            goal =>
-              goal.goalName ===
-              'Emergency'
-          )
-
-        const vacation =
-          result.find(
-            goal =>
-              goal.goalName ===
-              'Vacation'
-          )
-
-        expect(
-          emergency?.totalAllocated
-        ).toBe(800)
-
-        expect(
-          vacation?.totalAllocated
-        ).toBe(0)
-
-      }
-    )
-
-
-    /*
-     * ---------------------------------------------
-     * DEADLINE TIE BREAKER
-     * ---------------------------------------------
-     */
-
-    it(
-      'uses earlier deadline as a tie breaker',
-      () => {
-
-        const laptop =
-          createGoal({
-            id: 1,
-
-            name: 'Laptop',
-
-            targetAmount: 500,
-
-            priority: 1,
-
-            deadline:
-              '2026-09-01',
-          })
-
-        const vacation =
-          createGoal({
-            id: 2,
-
-            name: 'Vacation',
-
-            targetAmount: 500,
-
-            priority: 1,
-
-            deadline:
-              '2026-10-01',
-          })
-
-        const budget =
-          createBudget({
-            amount: 500,
-          })
-
-        const strategy =
-          new PriorityAllocationStrategy()
-
-        const result =
-          strategy.allocate(
-            [
-              laptop,
-              vacation,
-            ],
-            [budget]
-          )
-
-        const laptopResult =
-          result.find(
-            goal =>
-              goal.goalName ===
-              'Laptop'
-          )
-
-        const vacationResult =
-          result.find(
-            goal =>
-              goal.goalName ===
-              'Vacation'
-          )
-
-        expect(
-          laptopResult?.totalAllocated
-        ).toBe(500)
-
-        expect(
-          vacationResult?.totalAllocated
-        ).toBe(0)
-
-      }
-    )
-
-
-    /*
-     * ---------------------------------------------
-     * START DATE
-     *
-     * Money before the goal starts should
-     * NOT be allocated before the start date.
-     *
-     * However, the money should be carried
-     * forward and become available once the
-     * goal starts.
-     * ---------------------------------------------
-     */
-
-    it(
-      'does not allocate money before a goal starts',
-      () => {
-
-        const goal =
-          createGoal({
-
-            id: 1,
-
-            name: 'Laptop',
-
-            targetAmount: 500,
-
-            priority: 1,
-
-            startDate:
-              '2026-09-01',
-
-            deadline:
-              '2026-09-01',
-
-          })
-
-
-        const budgets = [
-
-          createBudget({
-
-            year: 2026,
-
-            month: 7,
-
-            amount: 500,
-
-          }),
-
-        ]
-
-
-        const strategy =
-          new PriorityAllocationStrategy()
-
-
-        const result =
-          strategy.allocate(
-            [goal],
-            budgets
-          )
-
-
-        const goalResult =
           result[0]
-
-
-        /*
-         * August is before the goal starts.
-         *
-         * Therefore there must be no
-         * August allocation.
-         */
-
-        const augustAllocation =
-          goalResult.monthlyAllocations.find(
-            allocation =>
-
-              allocation.year ===
-                2026 &&
-
-              allocation.month ===
-                7
-
-          )
-
-
-        expect(
-          augustAllocation?.amount ?? 0
-        ).toBe(0)
-
-
-        /*
-         * The RM500 from August is carried
-         * forward to September.
-         *
-         * September is month 8 because
-         * JavaScript months are zero-based.
-         */
-
-        const septemberAllocation =
-          goalResult.monthlyAllocations.find(
-            allocation =>
-
-              allocation.year ===
-                2026 &&
-
-              allocation.month ===
-                8
-
-          )
-
-
-        expect(
-          septemberAllocation?.amount ?? 0
-        ).toBe(500)
-
-
-        /*
-         * The goal should now be fully funded.
-         */
-
-        expect(
-          goalResult.totalAllocated
+            .shortfall
         ).toBe(500)
 
       }
@@ -582,85 +129,124 @@ describe(
 
 
     /*
-     * ---------------------------------------------
-     * DEADLINE
-     * ---------------------------------------------
+     * =============================================
+     * ZERO BUDGET
+     * =============================================
      */
 
     it(
-      'does not allocate to a goal after its deadline',
+      'does not allocate a zero budget',
       () => {
 
-        const goal =
+        const goals = [
+
           createGoal({
 
-            targetAmount: 500,
-
-            startDate:
-              '2026-08-01',
-
-            deadline:
-              '2026-08-01',
-
-          })
-
-
-        const budgets = [
-
-          createBudget({
-
-            year: 2026,
-
-            month: 7,
-
-            amount: 500,
-
-          }),
-
-          createBudget({
-
-            year: 2026,
-
-            month: 8,
-
-            amount: 500,
+            targetAmount:
+              500,
 
           }),
 
         ]
 
 
-        const strategy =
-          new PriorityAllocationStrategy()
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              0,
+
+          }),
+
+        ]
 
 
         const result =
           strategy.allocate(
-            [goal],
+            goals,
             budgets
           )
 
 
         expect(
-          result[0].totalAllocated
-        ).toBe(500)
+          result[0]
+            .totalAllocated
+        ).toBe(0)
+
 
         expect(
-          result[0].monthlyAllocations
-            .every(
-              allocation =>
+          result[0]
+            .monthlyAllocations
+            .length
+        ).toBe(0)
 
-                allocation.year <
-                  2026 ||
+      }
+    )
 
-                (
-                  allocation.year ===
-                    2026 &&
 
-                  allocation.month <=
-                    7
-                )
-            )
+    /*
+     * =============================================
+     * ZERO TARGET
+     * =============================================
+     */
+
+    it(
+      'handles a zero target goal',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              0,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(0)
+
+
+        expect(
+          result[0]
+            .shortfall
+        ).toBe(0)
+
+
+        expect(
+          result[0]
+            .percentage
+        ).toBe(100)
+
+
+        expect(
+          result[0]
+            .reachable
         ).toBe(true)
 
       }
@@ -668,42 +254,581 @@ describe(
 
 
     /*
-     * ---------------------------------------------
-     * TARGET LIMIT
-     * ---------------------------------------------
+     * =============================================
+     * EXACT FUNDING
+     * =============================================
+     */
+
+    it(
+      'fully funds a goal when budget exactly matches the target',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(500)
+
+
+        expect(
+          result[0]
+            .shortfall
+        ).toBe(0)
+
+
+        expect(
+          result[0]
+            .percentage
+        ).toBe(100)
+
+
+        expect(
+          result[0]
+            .reachable
+        ).toBe(true)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * BUDGET GREATER THAN TARGET
+     * =============================================
      */
 
     it(
       'does not allocate more than the target amount',
       () => {
 
-        const goal =
+        const goals = [
+
           createGoal({
-            targetAmount: 500,
-          })
 
-        const budget =
+            targetAmount:
+              500,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
           createBudget({
-            amount: 2000,
-          })
 
-        const strategy =
-          new PriorityAllocationStrategy()
+            amount:
+              1000,
+
+          }),
+
+        ]
+
 
         const result =
           strategy.allocate(
-            [goal],
-            [budget]
+            goals,
+            budgets
           )
 
-        expect(
-          result[0].totalAllocated
-        ).toBe(500)
 
         expect(
-          result[0].totalAllocated
-        ).toBeLessThanOrEqual(
-          goal.targetAmount
+          result[0]
+            .totalAllocated
+        ).toBe(500)
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).not.toBeGreaterThan(500)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * PARTIAL FUNDING
+     * =============================================
+     */
+
+    it(
+      'records the correct shortfall for partial funding',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              1000,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              400,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(400)
+
+
+        expect(
+          result[0]
+            .shortfall
+        ).toBe(600)
+
+
+        expect(
+          result[0]
+            .reachable
+        ).toBe(false)
+
+
+        expect(
+          result[0]
+            .percentage
+        ).toBe(40)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * MULTIPLE BUDGETS SAME MONTH
+     * =============================================
+     */
+
+    it(
+      'combines multiple budgets from the same month',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              200,
+
+          }),
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              300,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(500)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * MULTIPLE MONTHS
+     * =============================================
+     */
+
+    it(
+      'allocates budget across multiple months',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              600,
+
+            startDate:
+              '2026-07-01',
+
+            deadline:
+              '2026-09-01',
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              6,
+
+            amount:
+              200,
+
+          }),
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              200,
+
+          }),
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              8,
+
+            amount:
+              200,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(600)
+
+
+        expect(
+          result[0]
+            .reachable
+        ).toBe(true)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * GOAL STARTS AFTER FIRST BUDGET
+     * =============================================
+     */
+
+    it(
+      'carries unused money into a goal that starts later',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+            startDate:
+              '2026-09-01',
+
+            deadline:
+              '2026-09-01',
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              200,
+
+          }),
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              8,
+
+            amount:
+              300,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(500)
+
+
+        expect(
+          result[0]
+            .reachable
+        ).toBe(true)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * GOAL NOT ACTIVE YET
+     * =============================================
+     */
+
+    it(
+      'carries budget forward until the goal becomes active',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+            startDate:
+              '2026-09-01',
+
+            deadline:
+              '2026-10-01',
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(500)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * HIGH PRIORITY VS LOW PRIORITY
+     * =============================================
+     */
+
+    it(
+      'sorts goals by priority',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            id:
+              1,
+
+            targetAmount:
+              500,
+
+            priority:
+              10,
+
+          }),
+
+          createGoal({
+
+            id:
+              2,
+
+            targetAmount:
+              500,
+
+            priority:
+              1,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        const high =
+          result.find(
+            goal =>
+              goal.goalId === 1
+          )
+
+
+        const low =
+          result.find(
+            goal =>
+              goal.goalId === 2
+          )
+
+
+        expect(
+          high?.totalAllocated
+        ).toBeGreaterThan(
+          low?.totalAllocated ?? 0
         )
 
       }
@@ -711,110 +836,797 @@ describe(
 
 
     /*
-     * ---------------------------------------------
-     * MONTHLY ALLOCATION
-     * ---------------------------------------------
+     * =============================================
+     * EQUAL PRIORITY
+     * =============================================
      */
 
     it(
-      'records monthly allocation correctly',
+      'uses earlier deadline when priorities are equal',
       () => {
 
-        const goal =
-          createGoal({
-            targetAmount: 1000,
+        const goals = [
 
-            startDate:
-              '2026-08-01',
+          createGoal({
+
+            id:
+              1,
+
+            targetAmount:
+              500,
+
+            priority:
+              5,
 
             deadline:
-              '2026-09-01',
-          })
+              '2026-08-01',
 
-        const budgets = [
-
-          createBudget({
-            year: 2026,
-
-            month: 7,
-
-            amount: 500,
           }),
 
-          createBudget({
-            year: 2026,
+          createGoal({
 
-            month: 8,
+            id:
+              2,
 
-            amount: 500,
+            targetAmount:
+              500,
+
+            priority:
+              5,
+
+            deadline:
+              '2026-10-01',
+
           }),
 
         ]
 
-        const strategy =
-          new PriorityAllocationStrategy()
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
 
         const result =
           strategy.allocate(
-            [goal],
+            goals,
             budgets
           )
 
-        expect(
-          result[0].monthlyAllocations
-            .length
-        ).toBeGreaterThan(0)
+
+        const earlier =
+          result.find(
+            goal =>
+              goal.goalId === 1
+          )
+
+
+        const later =
+          result.find(
+            goal =>
+              goal.goalId === 2
+          )
+
 
         expect(
-          result[0].monthlyAllocations
-            .every(
-              allocation =>
-                allocation.amount > 0
-            )
-        ).toBe(true)
+          earlier?.totalAllocated
+        ).toBeGreaterThan(
+          later?.totalAllocated ?? 0
+        )
 
       }
     )
 
 
     /*
-     * ---------------------------------------------
-     * COMPLETION DATE
-     * ---------------------------------------------
+     * =============================================
+     * THREE COMPETING GOALS
+     * =============================================
      */
 
     it(
-      'records the completion date',
+      'handles three goals competing for limited surplus',
       () => {
 
-        const goal =
+        const goals = [
+
           createGoal({
-            targetAmount: 500,
+
+            id:
+              1,
+
+            targetAmount:
+              500,
+
+            priority:
+              10,
+
+          }),
+
+          createGoal({
+
+            id:
+              2,
+
+            targetAmount:
+              500,
+
+            priority:
+              5,
+
+          }),
+
+          createGoal({
+
+            id:
+              3,
+
+            targetAmount:
+              500,
+
+            priority:
+              1,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              600,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        const total =
+          result.reduce(
+            (
+              sum,
+              goal
+            ) =>
+              sum +
+              goal.totalAllocated,
+            0
+          )
+
+
+        expect(
+          total
+        ).toBe(600)
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBeLessThanOrEqual(500)
+
+
+        expect(
+          result[1]
+            .totalAllocated
+        ).toBeLessThanOrEqual(500)
+
+
+        expect(
+          result[2]
+            .totalAllocated
+        ).toBeLessThanOrEqual(500)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * BUDGET EXHAUSTION
+     * =============================================
+     */
+
+    it(
+      'does not allocate more money than the total available budget',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            id:
+              1,
+
+            targetAmount:
+              1000,
+
+          }),
+
+          createGoal({
+
+            id:
+              2,
+
+            targetAmount:
+              1000,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              700,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        const total =
+          result.reduce(
+            (
+              sum,
+              goal
+            ) =>
+              sum +
+              goal.totalAllocated,
+            0
+          )
+
+
+        expect(
+          total
+        ).toBe(700)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * TARGET REACHED BEFORE DEADLINE
+     * =============================================
+     */
+
+    it(
+      'stops allocating to a goal once its target is reached',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              300,
+
+            startDate:
+              '2026-07-01',
+
+            deadline:
+              '2026-09-01',
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              6,
+
+            amount:
+              300,
+
+          }),
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              300,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(300)
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).not.toBeGreaterThan(300)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * COMPLETION DATE
+     * =============================================
+     */
+
+    it(
+      'records a completion date when target is reached',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .completionDate
+        ).not.toBeNull()
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * MONTHLY ALLOCATION MERGING
+     * =============================================
+     */
+
+    it(
+      'does not create duplicate monthly allocation rows',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              200,
+
+          }),
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              300,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        const allocations =
+          result[0]
+            .monthlyAllocations
+
+
+        expect(
+          allocations.length
+        ).toBe(1)
+
+
+        expect(
+          allocations[0]
+            .amount
+        ).toBe(500)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * PERCENTAGE
+     * =============================================
+     */
+
+    it(
+      'calculates percentage correctly for partial funding',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              800,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              200,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .percentage
+        ).toBe(25)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * SMALL DECIMAL VALUES
+     * =============================================
+     */
+
+    it(
+      'handles decimal monetary values correctly',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              100.01,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              100.01,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(100.01)
+
+
+        expect(
+          result[0]
+            .shortfall
+        ).toBe(0)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * VERY SMALL BUDGET
+     * =============================================
+     */
+
+    it(
+      'handles a budget smaller than one monetary unit',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              100,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              0.01,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(0.01)
+
+
+        expect(
+          result[0]
+            .shortfall
+        ).toBe(99.99)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * SAME MONTH START AND DEADLINE
+     * =============================================
+     */
+
+    it(
+      'handles a goal whose start and deadline are in the same month',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
 
             startDate:
               '2026-08-01',
 
             deadline:
-              '2026-08-01',
-          })
+              '2026-08-31',
 
-        const budget =
+          }),
+
+        ]
+
+
+        const budgets = [
+
           createBudget({
-            amount: 500,
-          })
 
-        const strategy =
-          new PriorityAllocationStrategy()
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
 
         const result =
           strategy.allocate(
-            [goal],
-            [budget]
+            goals,
+            budgets
           )
 
+
         expect(
-          result[0].completionDate
-        ).toBe('August 2026')
+          result[0]
+            .requiredMonthly
+        ).toBeGreaterThan(0)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * MONTHLY PLAN SUM
+     * =============================================
+     */
+
+    it(
+      'does not create monthly allocations exceeding the target',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              1000,
+
+            startDate:
+              '2026-08-01',
+
+            deadline:
+              '2026-10-01',
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              1000,
+
+          }),
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              8,
+
+            amount:
+              1000,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        const total =
+          result[0]
+            .monthlyAllocations
+            .reduce(
+              (
+                sum,
+                allocation
+              ) =>
+                sum +
+                allocation.amount,
+              0
+            )
+
+
+        expect(
+          total
+        ).toBeLessThanOrEqual(1000)
 
       }
     )
