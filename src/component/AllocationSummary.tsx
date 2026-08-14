@@ -90,7 +90,7 @@ function AllocationSummary({
                 <div className="planning-options">
 
                   <h3>
-                    Planning Options
+                    Planning Options (Click the section to see the allocation)
                   </h3>
 
 
@@ -135,8 +135,9 @@ function AllocationSummary({
                             <strong>
 
                               {
-                                plan.recommended &&
-                                '⭐ '
+                                plan.recommended
+      ? '(⭐ Recommended) '
+      : '(Alternative) '
                               }
 
                               {
@@ -199,7 +200,7 @@ function AllocationSummary({
 
                   <p>
 
-                    Progress:{' '}
+                    Progress per month:{' '}
 
                     <strong>
 
