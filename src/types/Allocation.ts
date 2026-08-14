@@ -5,6 +5,7 @@ export interface MonthlyAllocation {
   amount: number
 }
 
+
 export interface AllocationPlan {
   type: 'immediate' | 'monthly'
   description: string
@@ -12,6 +13,7 @@ export interface AllocationPlan {
   recommended?: boolean
   monthlyAllocations: MonthlyAllocation[]
 }
+
 
 export interface AllocationResult {
   goalId: number
@@ -34,4 +36,40 @@ export interface AllocationResult {
   completionDate: string | null
 
   monthlyAllocations: MonthlyAllocation[]
+}
+
+
+/* ================================================= */
+/* SYSTEM ALLOCATION */
+/* ================================================= */
+
+export interface SystemGoalAllocation {
+
+  goalId: number
+
+  goalName: string
+
+  targetAmount: number
+
+  totalAllocated: number
+
+  percentage: number
+
+  reachable: boolean
+
+  monthlyAllocations:
+    MonthlyAllocation[]
+}
+
+
+export interface SystemAllocation {
+
+  rank: number
+
+  title: string
+
+  score: number
+
+  goals:
+    SystemGoalAllocation[]
 }

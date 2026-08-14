@@ -2,14 +2,24 @@ import { useState } from 'react'
 
 import type {
   AllocationResult,
+  SystemAllocation,
 } from '../types/Allocation'
 
+
 interface AllocationSummaryProps {
-  results: AllocationResult[]
+
+  results:
+    AllocationResult[]
+
+  systemAllocations:
+    SystemAllocation[]
+
 }
+
 
 function AllocationSummary({
   results,
+  systemAllocations,
 }: AllocationSummaryProps) {
 
   const [
@@ -40,10 +50,15 @@ function AllocationSummary({
 
     <div>
 
+      {/* ================================================= */}
+      {/* CURRENT ALLOCATION */}
+      {/* ================================================= */}
+
       {results.map(result => {
 
         const selectedPlanType =
           selectedPlans[result.goalId]
+
 
         const selectedPlan =
           result.allocationPlans.find(
@@ -60,9 +75,7 @@ function AllocationSummary({
             key={result.goalId}
           >
 
-            {/* ========================= */}
             {/* GOAL */}
-            {/* ========================= */}
 
             <h2>
               {result.goalName}
@@ -80,9 +93,7 @@ function AllocationSummary({
             </p>
 
 
-            {/* ========================= */}
             {/* PLANNING OPTIONS */}
-            {/* ========================= */}
 
             {
               result.allocationPlans.length > 0 && (
@@ -101,6 +112,7 @@ function AllocationSummary({
                         const isSelected =
                           selectedPlanType ===
                           plan.type
+
 
                         return (
 
@@ -122,6 +134,7 @@ function AllocationSummary({
                             onClick={() =>
                               setSelectedPlans(
                                 previous => ({
+
                                   ...previous,
 
                                   [result.goalId]:
@@ -136,9 +149,10 @@ function AllocationSummary({
 
                               {
                                 plan.recommended
-      ? '(⭐ Recommended) '
-      : '(Alternative) '
+                                  ? '(⭐ Recommended) '
+                                  : '(Alternative) '
                               }
+
 
                               {
                                 plan.type ===
@@ -178,9 +192,7 @@ function AllocationSummary({
             }
 
 
-            {/* ========================= */}
-            {/* SELECTED PLAN DETAILS */}
-            {/* ========================= */}
+            {/* SELECTED PLAN */}
 
             {
               selectedPlan && (
@@ -207,6 +219,7 @@ function AllocationSummary({
                       {
                         Math.min(
                           100,
+
                           Math.round(
                             (
                               selectedPlan.amount /
@@ -221,9 +234,7 @@ function AllocationSummary({
                   </p>
 
 
-                  {/* ========================= */}
                   {/* MONTHLY ALLOCATION */}
-                  {/* ========================= */}
 
                   {
                     selectedPlan.monthlyAllocations
@@ -299,9 +310,7 @@ function AllocationSummary({
                   }
 
 
-                  {/* ========================= */}
                   {/* EXPECTED COMPLETION */}
-                  {/* ========================= */}
 
                   {
                     selectedPlan
@@ -337,9 +346,7 @@ function AllocationSummary({
             }
 
 
-            {/* ========================= */}
             {/* STATUS */}
-            {/* ========================= */}
 
             {
               result.reachable ? (
@@ -369,9 +376,261 @@ function AllocationSummary({
 
       })}
 
+
+      {/* ================================================= */}
+      {/* SYSTEM ALLOCATION */}
+      {/* ================================================= */}
+
+      {
+        systemAllocations.length > 0 && (
+
+          <section className="system-allocation">
+
+            <div className="system-allocation-header">
+
+              <h2>
+                System Allocation
+              </h2>
+
+
+              <p>
+                Alternative allocation combinations
+                generated from your goals, priorities,
+                deadlines, and available budget.
+              </p>
+
+            </div>
+
+
+            {
+              systemAllocations.map(
+                combination => (
+
+                  <div
+                    className="system-allocation-card"
+                    key={
+                      combination.rank
+                    }
+                  >
+
+                    {/* TITLE */}
+
+                    <div
+                      className="system-allocation-title"
+                    >
+
+                      <div>
+
+                        <h3>
+
+                          {
+                            combination.rank === 1
+                              ? '🥇'
+                              : combination.rank === 2
+                                ? '🥈'
+                                : '🥉'
+                          }
+
+                          {' '}
+
+                          Top {combination.rank}
+
+                          {' — '}
+
+                          {combination.title}
+
+                        </h3>
+
+                      </div>
+
+
+                      <div
+                        className="system-allocation-score"
+                      >
+
+                        Score:{' '}
+
+                        <strong>
+                          {combination.score}
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+
+                    {/* GOALS */}
+
+                    <div
+                      className="system-allocation-goals"
+                    >
+
+                      {
+                        combination.goals.map(
+                          goal => (
+
+                            <div
+                              className="system-allocation-goal"
+                              key={
+                                goal.goalId
+                              }
+                            >
+
+                              <h4>
+                                {goal.goalName}
+                              </h4>
+
+
+                              <p>
+
+                                Target:{' '}
+
+                                <strong>
+                                  RM {goal.targetAmount}
+                                </strong>
+
+                              </p>
+
+
+                              <p>
+
+                                Allocated:{' '}
+
+                                <strong>
+                                  RM {goal.totalAllocated}
+                                </strong>
+
+                              </p>
+
+
+                              <p>
+
+                                Progress:{' '}
+
+                                <strong>
+                                  {goal.percentage}%
+                                </strong>
+
+                              </p>
+
+
+                              {
+                                goal.monthlyAllocations
+                                  .length > 0 && (
+
+                                  <div
+                                    className="system-monthly-allocation"
+                                  >
+
+                                    <h5>
+                                      Monthly Allocation
+                                    </h5>
+
+
+                                    <table>
+
+                                      <thead>
+
+                                        <tr>
+
+                                          <th>
+                                            Month
+                                          </th>
+
+                                          <th>
+                                            Allocation
+                                          </th>
+
+                                        </tr>
+
+                                      </thead>
+
+
+                                      <tbody>
+
+                                        {
+                                          goal
+                                            .monthlyAllocations
+                                            .map(
+                                              allocation => (
+
+                                                <tr
+                                                  key={
+                                                    `${combination.rank}-${goal.goalId}-${allocation.year}-${allocation.month}`
+                                                  }
+                                                >
+
+                                                  <td>
+                                                    {
+                                                      allocation.monthName
+                                                    }
+                                                  </td>
+
+                                                  <td>
+                                                    RM {
+                                                      allocation.amount
+                                                    }
+                                                  </td>
+
+                                                </tr>
+
+                                              )
+                                            )
+                                        }
+
+                                      </tbody>
+
+                                    </table>
+
+                                  </div>
+
+                                )
+                              }
+
+
+                              {
+                                goal.reachable ? (
+
+                                  <p className="reachable">
+
+                                    ✅ Reachable
+
+                                  </p>
+
+                                ) : (
+
+                                  <p className="unreachable">
+
+                                    ⚠️ Not fully funded
+
+                                  </p>
+
+                                )
+                              }
+
+                            </div>
+
+                          )
+                        )
+                      }
+
+                    </div>
+
+                  </div>
+
+                )
+              )
+            }
+
+          </section>
+
+        )
+      }
+
     </div>
 
   )
 }
+
 
 export default AllocationSummary

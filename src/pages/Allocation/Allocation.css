@@ -338,3 +338,95 @@ PLANNING OPTIONS
   background: #fff4cc;
   border: 2px solid #f0c000;
 }
+
+/* ================================================= */
+/* SYSTEM ALLOCATION */
+/* ================================================= */
+
+.system-allocation {
+  margin-top: 48px;
+}
+
+
+.system-allocation-header {
+  margin-bottom: 24px;
+}
+
+
+.system-allocation-header h2 {
+  margin-bottom: 8px;
+}
+
+
+.system-allocation-header p {
+  margin: 0;
+  opacity: 0.75;
+}
+
+
+.system-allocation-card {
+  margin-bottom: 24px;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: white;
+}
+
+
+.system-allocation-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+
+.system-allocation-title h3 {
+  margin: 0;
+}
+
+
+.system-allocation-score {
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+
+.system-allocation-goals {
+  display: grid;
+  gap: 16px;
+}
+
+
+.system-allocation-goal {
+  padding: 18px;
+  border-radius: 10px;
+  background: #f7f7f7;
+}
+
+
+.system-allocation-goal h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+
+.system-allocation-goal h5 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+
+.system-monthly-allocation table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+.system-monthly-allocation th,
+.system-monthly-allocation td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
