@@ -18,6 +18,7 @@ describe(
   'System Allocation',
   () => {
 
+
     /*
      * =============================================
      * LAPTOP + SPA
@@ -32,7 +33,8 @@ describe(
 
           createGoal({
 
-            id: 1,
+            id:
+              1,
 
             name:
               'Laptop',
@@ -53,7 +55,8 @@ describe(
 
           createGoal({
 
-            id: 2,
+            id:
+              2,
 
             name:
               'Spa',
@@ -100,11 +103,6 @@ describe(
           )
 
 
-        /*
-         * We should receive up to 3
-         * combinations.
-         */
-
         expect(
           results.length
         ).toBeGreaterThan(0)
@@ -114,10 +112,6 @@ describe(
           results.length
         ).toBeLessThanOrEqual(3)
 
-
-        /*
-         * Ranking should be sequential.
-         */
 
         results.forEach(
           (
@@ -134,10 +128,6 @@ describe(
           }
         )
 
-
-        /*
-         * Scores should be descending.
-         */
 
         for (
           let i = 1;
@@ -321,8 +311,10 @@ describe(
         const budgets = [
 
           createBudget({
+
             amount:
               1000,
+
           }),
 
         ]
@@ -437,6 +429,106 @@ describe(
         ).toBe(
           signatures.length
         )
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * INSUFFICIENT BUDGET
+     * =============================================
+     */
+
+    it(
+      'generates allocation options when not all goals are reachable',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            id:
+              1,
+
+            name:
+              'Laptop',
+
+            targetAmount:
+              1000,
+
+            priority:
+              5,
+
+          }),
+
+          createGoal({
+
+            id:
+              2,
+
+            name:
+              'Holiday',
+
+            targetAmount:
+              1000,
+
+            priority:
+              3,
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const results =
+          generateSystemAllocation(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          results.length
+        ).toBeGreaterThan(0)
+
+
+        const top =
+          results[0]
+
+
+        expect(
+          top
+        ).toBeDefined()
+
+
+        const total =
+          top.goals.reduce(
+            (
+              sum,
+              goal
+            ) =>
+              sum +
+              goal.totalAllocated,
+            0
+          )
+
+
+        expect(
+          total
+        ).toBe(500)
 
       }
     )

@@ -235,5 +235,141 @@ describe(
       }
     )
 
+
+    /*
+     * =============================================
+     * DEADLINE BOUNDARY
+     * =============================================
+     */
+
+    it(
+      'allocates budget when the budget month matches the deadline month',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+            startDate:
+              '2026-08-01',
+
+            deadline:
+              '2026-08-31',
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              7,
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(500)
+
+
+        expect(
+          result[0]
+            .reachable
+        ).toBe(true)
+
+      }
+    )
+
+
+    /*
+     * =============================================
+     * AFTER DEADLINE
+     * =============================================
+     */
+
+    it(
+      'does not use budget after the goal deadline',
+      () => {
+
+        const goals = [
+
+          createGoal({
+
+            targetAmount:
+              500,
+
+            startDate:
+              '2026-08-01',
+
+            deadline:
+              '2026-08-31',
+
+          }),
+
+        ]
+
+
+        const budgets = [
+
+          createBudget({
+
+            year:
+              2026,
+
+            month:
+              9,
+
+            amount:
+              500,
+
+          }),
+
+        ]
+
+
+        const result =
+          strategy.allocate(
+            goals,
+            budgets
+          )
+
+
+        expect(
+          result[0]
+            .totalAllocated
+        ).toBe(0)
+
+
+        expect(
+          result[0]
+            .reachable
+        ).toBe(false)
+
+      }
+    )
+
   }
 )

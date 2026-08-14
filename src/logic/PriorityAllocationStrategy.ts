@@ -201,8 +201,7 @@ export class PriorityAllocationStrategy
 
 
       /*
-       * Carry previous unused money into
-       * the current month.
+       * Carry unused money from previous months.
        */
 
       let availableBudget =
@@ -282,7 +281,11 @@ export class PriorityAllocationStrategy
           .sort((a, b) => {
 
             /*
-             * Higher priority first.
+             * ---------------------------------------
+             * STRICT PRIORITY
+             * ---------------------------------------
+             *
+             * Higher priority always comes first.
              */
 
             if (
@@ -296,9 +299,10 @@ export class PriorityAllocationStrategy
               )
             }
 
+
             /*
              * If priorities are equal,
-             * earlier deadline first.
+             * earlier deadline comes first.
              */
 
             return (
@@ -315,10 +319,18 @@ export class PriorityAllocationStrategy
 
       /*
        * -------------------------------------------
-       * FIRST PASS
+       * STRICT PRIORITY ALLOCATION
+       * -------------------------------------------
        *
-       * Give each active goal the amount it
-       * needs to remain approximately on track.
+       * The highest-priority goal receives money
+       * first.
+       *
+       * We do NOT distribute a monthly amount
+       * across all goals.
+       *
+       * We continue down the priority list only
+       * after the previous goal has been fully
+       * funded or the budget has been exhausted.
        * -------------------------------------------
        */
 
@@ -332,10 +344,12 @@ export class PriorityAllocationStrategy
           break
         }
 
+
         const alreadyAllocated =
           allocatedByGoal.get(
             goal.id
           ) ?? 0
+
 
         const remaining =
           Math.max(
@@ -344,6 +358,7 @@ export class PriorityAllocationStrategy
               alreadyAllocated
           )
 
+
         if (
           remaining <= 0
         ) {
@@ -351,23 +366,14 @@ export class PriorityAllocationStrategy
         }
 
 
-        const remainingMonths =
-          countRemainingEligibleMonths(
-            goal,
-            year,
-            month
-          )
-
-        const amountNeededThisMonth =
-  roundMoney(
-    remaining /
-    remainingMonths
-  )
+        /*
+         * Give this goal as much as possible
+         * before moving to the next priority.
+         */
 
         const allocation =
           Math.min(
             availableBudget,
-            amountNeededThisMonth,
             remaining
           )
 
@@ -389,67 +395,12 @@ export class PriorityAllocationStrategy
           completionDates
         )
 
-        availableBudget -=
-          allocation
-      }
 
-
-      /*
-       * -------------------------------------------
-       * SECOND PASS
-       *
-       * Distribute remaining surplus according
-       * to priority.
-       * -------------------------------------------
-       */
-
-      for (
-        const goal of activeGoals
-      ) {
-
-        if (
-          availableBudget <= 0
-        ) {
-          break
-        }
-
-        const alreadyAllocated =
-          allocatedByGoal.get(
-            goal.id
-          ) ?? 0
-
-        const remaining =
-          Math.max(
-            0,
-            goal.targetAmount -
-              alreadyAllocated
+        availableBudget =
+          roundMoney(
+            availableBudget -
+            allocation
           )
-
-        if (
-          remaining <= 0
-        ) {
-          continue
-        }
-
-        const allocation =
-          Math.min(
-            availableBudget,
-            remaining
-          )
-
-
-        addAllocation(
-          goal,
-          allocation,
-          month,
-          year,
-          allocatedByGoal,
-          monthlyAllocationsByGoal,
-          completionDates
-        )
-
-        availableBudget -=
-          allocation
       }
 
 
@@ -503,7 +454,8 @@ export class PriorityAllocationStrategy
        * -------------------------------------------
        */
 
-      const allocationPlans: AllocationPlan[] = []
+      const allocationPlans:
+        AllocationPlan[] = []
 
 
       /*
@@ -559,13 +511,6 @@ export class PriorityAllocationStrategy
       /*
        * -------------------------------------------
        * OPTION 1 — FUND IMMEDIATELY
-       *
-       * This option is shown ONLY when the
-       * entire target can actually be funded
-       * in the first eligible month.
-       *
-       * Money from months before the goal starts
-       * can carry forward into the first month.
        * -------------------------------------------
        */
 
@@ -636,11 +581,9 @@ export class PriorityAllocationStrategy
 
 
       /*
-       * IMPORTANT:
-       *
-       * Option 1 only exists when the money
-       * available by the first eligible month
-       * is enough to fund the entire target.
+       * Only show immediate option when
+       * enough money exists by the first
+       * eligible month.
        */
 
       if (
@@ -693,14 +636,6 @@ export class PriorityAllocationStrategy
        * -------------------------------------------
        * OPTION 2 — SPREAD MONTHLY
        * -------------------------------------------
-       *
-       * Only create a separate monthly option
-       * when the goal spans more than one month.
-       *
-       * If the goal starts and ends in the same
-       * month, the monthly option would be
-       * identical to the immediate option.
-       * -------------------------------------------
        */
 
       if (
@@ -743,13 +678,13 @@ export class PriorityAllocationStrategy
             )
 
           const allocation =
-  Math.min(
-    roundMoney(
-      spreadRemaining /
-      remainingMonths
-    ),
-    spreadRemaining
-  )
+            Math.min(
+              roundMoney(
+                spreadRemaining /
+                remainingMonths
+              ),
+              spreadRemaining
+            )
 
           spreadMonthlyAllocations.push({
 
@@ -770,8 +705,11 @@ export class PriorityAllocationStrategy
 
           })
 
-          spreadRemaining -=
-            allocation
+          spreadRemaining =
+            roundMoney(
+              spreadRemaining -
+              allocation
+            )
 
           spreadCurrent.setMonth(
             spreadCurrent.getMonth() + 1
@@ -783,16 +721,16 @@ export class PriorityAllocationStrategy
           type: 'monthly',
 
           description:
-  `RM ${spreadMonthlyAllocations[0]?.amount ?? 0} / month from ${formatMonthYear(
-    firstEligibleMonth,
-    firstEligibleYear
-  )} to ${formatMonthYear(
-    deadlineMonth,
-    deadlineYear
-  )}`,
+            `RM ${spreadMonthlyAllocations[0]?.amount ?? 0} / month from ${formatMonthYear(
+              firstEligibleMonth,
+              firstEligibleYear
+            )} to ${formatMonthYear(
+              deadlineMonth,
+              deadlineYear
+            )}`,
 
-amount:
-  spreadMonthlyAllocations[0]?.amount ?? 0,
+          amount:
+            spreadMonthlyAllocations[0]?.amount ?? 0,
 
           recommended:
             planningCarryForward <
@@ -821,7 +759,9 @@ amount:
 
       const percentage =
         goal.targetAmount === 0
+
           ? 100
+
           : Math.min(
               100,
               Math.round(
@@ -886,10 +826,12 @@ amount:
 function roundMoney(
   amount: number
 ): number {
+
   return Math.round(
     (amount + Number.EPSILON) * 100
   ) / 100
 }
+
 
 /*
  * ---------------------------------------------
@@ -966,7 +908,9 @@ function addAllocation(
 
 
   const newTotal =
-    previous + amount
+    roundMoney(
+      previous + amount
+    )
 
 
   allocatedByGoal.set(
@@ -982,8 +926,8 @@ function addAllocation(
 
 
   /*
-   * If the same goal receives money twice
-   * in the same month, combine the rows.
+   * Combine allocations if the same goal
+   * receives money twice in the same month.
    */
 
   const existing =
@@ -996,8 +940,11 @@ function addAllocation(
 
   if (existing) {
 
-    existing.amount +=
-      amount
+    existing.amount =
+      roundMoney(
+        existing.amount +
+        amount
+      )
 
   } else {
 
@@ -1013,7 +960,10 @@ function addAllocation(
           year
         ),
 
-      amount,
+      amount:
+        roundMoney(
+          amount
+        ),
 
     })
   }
