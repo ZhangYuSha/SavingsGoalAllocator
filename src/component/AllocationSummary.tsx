@@ -271,29 +271,29 @@ function AllocationSummary({
 
                   <p>
 
-  Progress per month:{' '}
+                    Progress per month:{' '}
 
-  <strong>
+                    <strong>
 
-    {
-      Math.min(
-        100,
+                      {
+                        Math.min(
+                          100,
 
-        Math.round(
-          (
-            (
-              selectedPlan.amount /
-              selectedPlan.monthlyAllocations.length
-            ) /
-            result.targetAmount
-          ) * 100
-        )
-      )
-    }%
+                          Math.round(
+                            (
+                              (
+                                selectedPlan.amount /
+                                selectedPlan.monthlyAllocations.length
+                              ) /
+                              result.targetAmount
+                            ) * 100
+                          )
+                        )
+                      }%
 
-  </strong>
+                    </strong>
 
-</p>
+                  </p>
 
 
                   {/* MONTHLY ALLOCATION */}
