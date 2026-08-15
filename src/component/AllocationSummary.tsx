@@ -203,10 +203,10 @@ function AllocationSummary({
 
                               {
                                 /**
-                                 * State the recommended approach.
+                                 * State the plan approach.
                                  */
                                 plan.recommended
-                                  ? '(⭐ Recommended) '
+                                  ? '(Standard Plan) '
                                   : '(Alternative) '
                               }
 
