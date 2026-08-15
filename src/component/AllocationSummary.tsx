@@ -271,7 +271,7 @@ function AllocationSummary({
 
                   <p>
 
-                    Progress per month:{' '}
+                    % of Target:{' '}
 
                     <strong>
 

@@ -1758,9 +1758,7 @@ it(
             plan.type === 'monthly'
         )
 
-    expect(
-      monthly
-    ).toBeDefined()
+    expect(monthly).toBeDefined()
 
   }
 )
@@ -1869,7 +1867,7 @@ it(
 // =================================================
 
 it(
-  'creates an immediate plan with the available money when insufficient money exists',
+  'creates an immediate plan with available money when insufficient money exists',
   () => {
 
     const goals = [
@@ -1902,9 +1900,7 @@ it(
             plan.type === 'immediate'
         )
 
-    expect(
-      immediate
-    ).toBeDefined()
+    expect(immediate).toBeDefined()
 
     expect(
       immediate?.amount
@@ -2014,13 +2010,10 @@ it(
             plan.type === 'monthly'
         )
 
-    expect(
-      monthly
-    ).toBeDefined()
+    expect(monthly).toBeDefined()
 
     expect(
-      monthly
-        ?.monthlyAllocations.length
+      monthly?.monthlyAllocations.length
     ).toBe(3)
 
   }
