@@ -5,6 +5,9 @@ import type { MonthlyBudget } from '../types/monthlyBudget'
  * when repeatedly adding/subtracting money across months.
  */
 export function roundMoney(amount: number): number {
+  // Adding Number.EPSILON before rounding guards against cases like
+  // 1.005 * 100 landing on 100.499999... due to floating point
+  // representation, which would otherwise round down incorrectly.
   return Math.round((amount + Number.EPSILON) * 100) / 100
 }
 
@@ -17,6 +20,8 @@ export function combineBudgetsByMonth(
 ): Map<string, number> {
   const budgetMap = new Map<string, number>()
 
+  // A given month could have multiple MonthlyBudget entries (e.g. from
+  // different sources/categories) — sum them all into one total per key.
   for (const budget of budgets) {
     const key = `${budget.year}-${budget.month}`
     const existing = budgetMap.get(key) ?? 0
@@ -38,12 +43,18 @@ export function findAllocationTimeline(
   goals: { startDate: string; deadline: string }[],
   budgets: MonthlyBudget[]
 ): { earliest: Date; latestDeadline: Date } | null {
+  // Collect every date that could possibly define the start of the
+  // simulation window: each goal's start date, each goal's deadline,
+  // and every budget month. The earliest of all of these becomes the
+  // starting point.
   const dates: Date[] = []
 
   for (const goal of goals) {
     const start = new Date(goal.startDate)
     const deadline = new Date(goal.deadline)
 
+    // Skip invalid/unparseable dates rather than letting NaN pollute
+    // the earliest/latest calculations below.
     if (!Number.isNaN(start.getTime())) {
       dates.push(start)
     }
@@ -53,20 +64,28 @@ export function findAllocationTimeline(
     }
   }
 
+  // Budget entries only carry year/month (no day), so normalize them
+  // to the 1st of that month for comparison purposes.
   for (const budget of budgets) {
     dates.push(new Date(budget.year, budget.month, 1))
   }
 
+  // No goal dates and no budget entries — there's no timeline to build.
   if (dates.length === 0) {
     return null
   }
 
+  // Earliest month across ALL collected dates (goal starts, goal
+  // deadlines, and budget months), normalized to the 1st of the month
+  // so day-of-month differences don't affect the comparison.
   const earliestTime = Math.min(
     ...dates.map(date =>
       new Date(date.getFullYear(), date.getMonth(), 1).getTime()
     )
   )
 
+  // Latest deadline considers ONLY goal deadlines (not budget months or
+  // goal start dates) — this is the point the simulation must run until.
   const latestTime = Math.max(
     ...goals.map(goal => new Date(goal.deadline).getTime())
   )
