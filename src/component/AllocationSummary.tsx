@@ -271,37 +271,29 @@ function AllocationSummary({
 
                   <p>
 
-                    Progress per month:{' '}
+  Progress per month:{' '}
 
-                    <strong>
+  <strong>
 
-                      {
-                    /*
-                     * Calculate how much of the goal target
-                     * is represented by the monthly allocation.
-                     *
-                     * Example:
-                     * RM 500 / RM 3000 × 100 = 16.67%
-                     *
-                     * Math.round() removes decimal places.
-                     * Math.min() prevents the result from
-                     * exceeding 100%.
-                     */
-                        Math.min(
-                          100,
+    {
+      Math.min(
+        100,
 
-                          Math.round(
-                            (
-                              selectedPlan.amount /
-                              result.targetAmount
-                            ) * 100
-                          )
-                        )
-                      }%
+        Math.round(
+          (
+            (
+              selectedPlan.amount /
+              selectedPlan.monthlyAllocations.length
+            ) /
+            result.targetAmount
+          ) * 100
+        )
+      )
+    }%
 
-                    </strong>
+  </strong>
 
-                  </p>
+</p>
 
 
                   {/* MONTHLY ALLOCATION */}
