@@ -1957,81 +1957,17 @@ it(
 
 
     // =================================================
-// 42. MULTI-MONTH PLAN HAS MULTIPLE ALLOCATIONS
-// =================================================
-
-it(
-  'creates multiple monthly allocations for a multi-month goal',
-  () => {
-
-    const goals = [
-
-      createGoal({
-        targetAmount: 900,
-        startDate: '2026-08-01',
-        deadline: '2026-10-01',
-      }),
-
-    ]
-
-    const budgets = [
-
-      createBudget({
-        year: 2026,
-        month: 7,
-        amount: 900,
-      }),
-
-      createBudget({
-        year: 2026,
-        month: 8,
-        amount: 400,
-      }),
-
-      createBudget({
-        year: 2026,
-        month: 9,
-        amount: 400,
-      }),
-
-    ]
-
-    const result =
-      strategy.allocate(
-        goals,
-        budgets
-      )
-
-    const monthly =
-      result[0]
-        .allocationPlans
-        .find(
-          plan =>
-            plan.type === 'monthly'
-        )
-
-    expect(monthly).toBeDefined()
-
-    expect(
-      monthly?.monthlyAllocations.length
-    ).toBe(3)
-
-  }
-)
-
-
-    // =================================================
-    // 43. MONTHLY PLAN DOES NOT EXCEED TARGET
+    // 42. MULTI-MONTH PLAN HAS MULTIPLE ALLOCATIONS
     // =================================================
 
     it(
-      'does not create monthly allocations exceeding the target',
+      'creates multiple monthly allocations for a multi-month goal',
       () => {
 
         const goals = [
 
           createGoal({
-            targetAmount: 1000,
+            targetAmount: 900,
             startDate: '2026-08-01',
             deadline: '2026-10-01',
           }),
@@ -2041,7 +1977,21 @@ it(
         const budgets = [
 
           createBudget({
-            amount: 2000,
+            year: 2026,
+            month: 7,
+            amount: 900,
+          }),
+
+          createBudget({
+            year: 2026,
+            month: 8,
+            amount: 400,
+          }),
+
+          createBudget({
+            year: 2026,
+            month: 9,
+            amount: 400,
           }),
 
         ]
@@ -2060,25 +2010,75 @@ it(
                 plan.type === 'monthly'
             )
 
-        const total =
-          monthly
-            ?.monthlyAllocations
-            .reduce(
-              (
-                sum,
-                allocation
-              ) =>
-                sum +
-                allocation.amount,
-              0
-            ) ?? 0
+        expect(monthly).toBeDefined()
 
         expect(
-          total
-        ).toBeLessThanOrEqual(1000)
+          monthly?.monthlyAllocations.length
+        ).toBe(3)
 
       }
     )
+
+
+        // =================================================
+        // 43. MONTHLY PLAN DOES NOT EXCEED TARGET
+        // =================================================
+
+        it(
+          'does not create monthly allocations exceeding the target',
+          () => {
+
+            const goals = [
+
+              createGoal({
+                targetAmount: 1000,
+                startDate: '2026-08-01',
+                deadline: '2026-10-01',
+              }),
+
+            ]
+
+            const budgets = [
+
+              createBudget({
+                amount: 2000,
+              }),
+
+            ]
+
+            const result =
+              strategy.allocate(
+                goals,
+                budgets
+              )
+
+            const monthly =
+              result[0]
+                .allocationPlans
+                .find(
+                  plan =>
+                    plan.type === 'monthly'
+                )
+
+            const total =
+              monthly
+                ?.monthlyAllocations
+                .reduce(
+                  (
+                    sum,
+                    allocation
+                  ) =>
+                    sum +
+                    allocation.amount,
+                  0
+                ) ?? 0
+
+            expect(
+              total
+            ).toBeLessThanOrEqual(1000)
+
+          }
+        )
 
 
     // =================================================
