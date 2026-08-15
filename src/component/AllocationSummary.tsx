@@ -260,7 +260,7 @@ function AllocationSummary({
 
                   <p>
 
-                    Total Allocated per month:{' '}
+                    Total Allocated:{' '}
 
                     <strong>
                       RM {selectedPlan.amount}
