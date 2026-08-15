@@ -271,7 +271,7 @@ function AllocationSummary({
 
                   <p>
 
-                    Progress finished / month:{' '}
+                    Progress finished per month:{' '}
 
                     <strong>
 
@@ -591,7 +591,7 @@ function AllocationSummary({
 
                               <p>
 
-                                Progress:{' '}
+                                Progress % at end date:{' '}
 
                                 <strong>
                                   {goal.percentage}%
