@@ -1,10 +1,16 @@
 import './GoalModal.css'
 
+/**
+ * Represent a goal that unreachable.
+ */
 interface GoalWarning {
   name: string
   shortfall: number
 }
 
+/**
+ * Property required by the GoalModal component.
+ */
 interface GoalModalProps {
   open: boolean
   status: 'reachable' | 'unreachable'
@@ -13,6 +19,16 @@ interface GoalModalProps {
   onContinue: () => void
 }
 
+/**
+ * 
+ * @param open - Determine the goal visibility.
+ * @param status - Determine the reachability of the goal.
+ * @param goals - List unreachable goal.
+ * @param onClose - Callback to close the modal.
+ * @param onContinue - Callback when goal is visible to go to next page.
+ * 
+ * @returns the goal status modal or null when closed.
+ */
 function GoalModal({
   open,
   status,
