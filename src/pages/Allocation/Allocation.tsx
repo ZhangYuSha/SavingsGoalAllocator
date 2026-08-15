@@ -414,9 +414,9 @@ function Allocation() {
       </h1>
 
 
-      /*
+      {/*
        * Short explanation of what the page displays.
-       */
+       */}
 
       <p className="allocation-subtitle">
 
