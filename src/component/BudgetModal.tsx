@@ -1,4 +1,5 @@
 import './BudgetModal.css'
+import Button from './Button'
 
 /**
  * Initialize the information required for displaying the budget
@@ -34,7 +35,6 @@ function BudgetModal({
   onClose,
 }: BudgetModalProps) {
 
-  /** No modal render if it's closed */
   if (!open) {
     return null
   }
@@ -64,9 +64,7 @@ function BudgetModal({
           RM {amount}
         </h3>
 
-        <button onClick={onClose}>
-          Continue
-        </button>
+        <Button text="Continue" onClick={onClose} />
 
       </div>
 

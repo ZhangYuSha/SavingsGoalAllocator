@@ -1,4 +1,5 @@
 import './Allocation.css'
+import Button from '../../component/Button'
 
 import {
   useLocation,
@@ -145,23 +146,10 @@ function Allocation() {
          * and budgets.
          */
 
-        <button
-          className="back-button"
-
-          onClick={() =>
-            navigate(
-              '/DataInput'
-            )
-          }
-        >
-
-          <span className="back-arrow">
-            ←
-          </span>
-
+        <Button className="back-button" onClick={() => navigate('/DataInput')}>
+          <span className="back-arrow">←</span>
           Back to Goals
-
-        </button>
+        </Button>
 
 
         /*

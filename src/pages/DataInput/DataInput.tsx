@@ -358,14 +358,10 @@ function DataInput() {
       {/* ========================= */}
 
       {/* Returns the user to the home page. */}
-      <button
-        className="back-button"
-        onClick={() =>
-          navigate('/')
-        }
-      >
-        ← Back to Home
-      </button>
+      <Button className="back-button" onClick={() => navigate('/DataInput')}>
+        <span className="back-arrow">←</span>
+        Back to Goals
+      </Button>
 
       {/* ========================= */}
       {/* PAGE TITLE */}

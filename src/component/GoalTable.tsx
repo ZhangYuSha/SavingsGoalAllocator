@@ -4,6 +4,8 @@ import {
   calculateMonthlySaving,
 } from '../logic/goalCalculator'
 
+import Button from './Button'
+
 
 /**
  * Props required by the GoalTable component.
@@ -123,16 +125,14 @@ function GoalTable({
 
               <td>
 
-                <button
-                  type="button"
+                <Button
+                  text="Delete"
                   onClick={() =>
                     onDelete(
                       goal.id
                     )
                   }
-                >
-                  Delete
-                </button>
+                />
 
               </td>
 

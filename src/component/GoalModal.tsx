@@ -1,4 +1,5 @@
 import './GoalModal.css'
+import Button from './Button'
 
 /**
  * Represent a goal that unreachable.
@@ -63,12 +64,11 @@ function GoalModal({
               your goals before their deadlines.
             </p>
 
-            <button
+            <Button
               className="continue-button"
+              text="View Allocation"
               onClick={onContinue}
-            >
-              View Allocation
-            </button>
+            />
           </>
 
         ) : (
@@ -110,12 +110,11 @@ function GoalModal({
 
             </div>
 
-            <button
+            <Button
               className="close-button"
+              text="Reconsider Goals"
               onClick={onClose}
-            >
-              Reconsider Goals
-            </button>
+            />
           </>
 
         )}
