@@ -2,7 +2,11 @@ import { useState } from 'react'
 
 import Button from './Button'
 
+/**
+ * Defines callback needed from the parent component to receive newly created savings goal.
+ */
 interface GoalFormProps {
+  /** Happen when user submits a valid goal */
   onAddGoal: (
     name: string,
     targetAmount: number,
@@ -12,6 +16,11 @@ interface GoalFormProps {
   ) => void
 }
 
+/**
+ * Handles savings goal form.
+ * @param onAddgoal - Callback used to submit validated goal. 
+ * @returns The savings goal form UI.
+ */
 function GoalForm({
   onAddGoal,
 }: GoalFormProps) {
@@ -24,6 +33,9 @@ function GoalForm({
 
   const handleSubmit = () => {
 
+    /**
+     * Prevent submission if required field empty.
+     */
     if (
       !name ||
       !targetAmount ||
@@ -33,6 +45,12 @@ function GoalForm({
       return
     }
 
+    /**
+     * Validate the target amount and date range.
+     * 
+     * Target > 0
+     * Deadline can not occur before start date
+     */
     if (
       Number(targetAmount) <= 0 ||
       new Date(deadline) < new Date(startDate)
@@ -40,6 +58,11 @@ function GoalForm({
       return
     }
 
+    /**
+     * Pass validated goal information to parent.
+     * 
+     * target amount converted to number.
+     */
     onAddGoal(
       name,
       Number(targetAmount),
@@ -48,6 +71,9 @@ function GoalForm({
       priority
     )
 
+    /**
+     * Reset form once submit
+     */
     setName('')
     setTargetAmount('')
     setStartDate('')
