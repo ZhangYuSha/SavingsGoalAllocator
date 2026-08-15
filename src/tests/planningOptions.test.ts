@@ -87,88 +87,88 @@ describe(
 
 
     /*
-     * =============================================
-     * MONTHLY OPTION
-     * =============================================
-     */
+ * =============================================
+ * MONTHLY OPTION
+ * =============================================
+ */
 
-    it(
-      'creates a monthly option for a multi-month goal',
-      () => {
+it(
+  'creates a monthly option for a multi-month goal',
+  () => {
 
-        const goals = [
+    const goals = [
 
-          createGoal({
+      createGoal({
 
-            targetAmount:
-              800,
+        targetAmount:
+          800,
 
-            startDate:
-              '2026-08-01',
+        startDate:
+          '2026-08-01',
 
-            deadline:
-              '2026-09-01',
+        deadline:
+          '2026-09-01',
 
-          }),
+      }),
 
-        ]
-
-
-        const budgets = [
-
-          createBudget({
-
-            month:
-              7,
-
-            amount:
-              400,
-
-          }),
-
-          createBudget({
-
-            month:
-              8,
-
-            amount:
-              400,
-
-          }),
-
-        ]
+    ]
 
 
-        const result =
-          strategy.allocate(
-            goals,
-            budgets
-          )
+    const budgets = [
+
+      createBudget({
+
+        month:
+          7,
+
+        amount:
+          800,
+
+      }),
+
+      createBudget({
+
+        month:
+          8,
+
+        amount:
+          400,
+
+      }),
+
+    ]
 
 
-        const monthly =
-          result[0]
-            .allocationPlans
-            .find(
-              plan =>
-                plan.type ===
-                'monthly'
-            )
+    const result =
+      strategy.allocate(
+        goals,
+        budgets
+      )
 
 
-        expect(
-          monthly
-        ).toBeDefined()
+    const monthly =
+      result[0]
+        .allocationPlans
+        .find(
+          plan =>
+            plan.type ===
+            'monthly'
+        )
 
 
-        expect(
-          monthly
-            ?.monthlyAllocations
-            .length
-        ).toBeGreaterThan(1)
+    expect(
+      monthly
+    ).toBeDefined()
 
-      }
-    )
+
+    expect(
+      monthly
+        ?.monthlyAllocations
+        .length
+    ).toBeGreaterThan(1)
+
+  }
+)
 
 
     /*
