@@ -414,6 +414,6 @@ Keeping allocation logic separate from React components makes the business logic
 ---
 
 ## Link to deployment
-savings-goal-allocator.vercel.app 
-savings-goal-allocator-2xp4wo8xi-isabella24.vercel.app 
+* savings-goal-allocator.vercel.app 
+* savings-goal-allocator-2xp4wo8xi-isabella24.vercel.app 
 
