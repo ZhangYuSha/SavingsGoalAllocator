@@ -360,7 +360,7 @@ function DataInput() {
       {/* Returns the user to the home page. */}
       <Button className="back-button" onClick={() => navigate('/HomeScreen')}>
         <span className="back-arrow">←</span>
-        Back to Goals
+        Back to previous page
       </Button>
 
       {/* ========================= */}

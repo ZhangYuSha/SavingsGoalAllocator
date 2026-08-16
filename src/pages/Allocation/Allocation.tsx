@@ -148,7 +148,7 @@ function Allocation() {
 
         <Button className="back-button" onClick={() => navigate('/DataInput')}>
           <span className="back-arrow">←</span>
-          Back to Goals
+          Back to previous page
         </Button>
 
 
