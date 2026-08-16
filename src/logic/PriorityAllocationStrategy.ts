@@ -278,14 +278,18 @@ function buildPlan(
 ): AllocationPlan {
   const first = allocations[0]
   const last = allocations[allocations.length - 1]
-
   const isSingleMonth = allocations.length === 1
+  const isLevelAmount = allocations.every(a => a.amount === first.amount)
+
+  const description = isSingleMonth
+    ? `RM ${first.amount} in ${first.monthName}`
+    : isLevelAmount
+      ? `RM ${first.amount} / month from ${first.monthName} to ${last.monthName}`
+      : `RM ${totalAllocated} total from ${first.monthName} to ${last.monthName}`
 
   return {
     type: style === 'immediate' ? 'immediate' : 'monthly',
-    description: isSingleMonth
-      ? `RM ${first.amount} in ${first.monthName}`
-      : `RM ${first.amount} / month from ${first.monthName} to ${last.monthName}`,
+    description,
     amount: totalAllocated,
     recommended,
     monthlyAllocations: allocations,
