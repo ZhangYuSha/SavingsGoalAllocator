@@ -410,3 +410,10 @@ The allocation logic contains important calculations and decision-making. Automa
 ## Why Separate Business Logic from the UI?
 
 Keeping allocation logic separate from React components makes the business logic easier to test, reuse, and maintain without depending on the user interface.
+
+---
+
+## Link to deployment
+savings-goal-allocator.vercel.app 
+savings-goal-allocator-2xp4wo8xi-isabella24.vercel.app 
+
